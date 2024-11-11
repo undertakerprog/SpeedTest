@@ -1,4 +1,4 @@
-namespace Web
+namespace Web.src
 {
     public class Program
     {
