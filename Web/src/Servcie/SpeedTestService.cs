@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Primitives;
 using System.Net.NetworkInformation;
 using System.Text;
-using 
 
 namespace Web.src.Servcie
 {
