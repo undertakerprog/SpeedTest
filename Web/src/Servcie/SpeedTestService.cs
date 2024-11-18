@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Primitives;
-using System.Net.NetworkInformation;
+﻿using System.Net.NetworkInformation;
 using System.Text;
 
 namespace Web.src.Servcie
