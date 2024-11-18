@@ -23,7 +23,7 @@ namespace Web.src.Servcie
                 result.Append("Name: " + adapter.Name + "\n");
                 result.Append("Physical Adress: " + adapter.GetPhysicalAddress().ToString() + "\n");
                 result.Append("Operational status: " + adapter.OperationalStatus + "\n");
-                
+
             }
             return "Number of interfaces: " + nics.Length + "\nHost Name " + computerProperties.HostName + "\n" + result;
         }

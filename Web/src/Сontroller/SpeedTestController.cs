@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿
+using Microsoft.AspNetCore.Mvc;
 using Web.src.Servcie;
 
 namespace Web.src.controller
@@ -14,7 +15,7 @@ namespace Web.src.controller
             _speedTestService = speedTestService;
         }
 
-        [HttpGet("speed-test")]
+        [HttpGet("interface")]
         public IActionResult GetSpeed()
         {
             var result = _speedTestService.GetSpeedTestResult();

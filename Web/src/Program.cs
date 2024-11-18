@@ -1,3 +1,4 @@
+
 using Web.src.Servcie;
 
 namespace Web
@@ -8,6 +9,7 @@ namespace Web
         {
             var builder = WebApplication.CreateBuilder(args);
             builder.Services.AddScoped<ISpeedTestService, SpeedTestService>();
+            builder.Services.AddScoped<IServerService, ServerService>();
 
             builder.Services.AddControllers();
 

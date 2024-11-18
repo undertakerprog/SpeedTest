@@ -18,7 +18,7 @@ namespace Desktop
     {
         public MainWindow()
         {
-            InitializeComponent();
+            
         }
     }
 }
