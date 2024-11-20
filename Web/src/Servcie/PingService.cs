@@ -4,8 +4,6 @@ namespace Web.src.Servcie
 {
     public class PingService : IPingService
     {
-
-
         public async Task<string> CheckPingAsync(string host)
         {
             using var ping = new Ping();
