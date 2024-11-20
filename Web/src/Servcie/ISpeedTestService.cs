@@ -2,6 +2,6 @@
 {
     public interface ISpeedTestService
     {
-        string GetSpeedTestResult();
+        string GetInterface();
     }
 }

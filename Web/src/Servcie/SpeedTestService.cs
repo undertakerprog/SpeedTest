@@ -5,7 +5,7 @@ namespace Web.src.Servcie
 {
     public class SpeedTestService : ISpeedTestService
     {
-        public string GetSpeedTestResult()
+        public string GetInterface()
         {
             IPGlobalProperties computerProperties = IPGlobalProperties.GetIPGlobalProperties();
             NetworkInterface[] nics = NetworkInterface.GetAllNetworkInterfaces();
