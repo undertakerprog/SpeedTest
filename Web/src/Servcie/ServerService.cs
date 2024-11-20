@@ -7,26 +7,26 @@ namespace Web.src.Servcie
     {
         private readonly string _file = "server.json";
 
-        public List<Server> GetServers()
+        public async Task<List<Server>> GetServersAsync()
         {
             if (!File.Exists(_file)) 
             {
                 throw new FileNotFoundException("File server.json not found");
             }
 
-            var jsonData = File.ReadAllText(_file);
+            var jsonData = await File.ReadAllTextAsync(_file);
             var servers = JsonConvert.DeserializeObject<List<Server>>(jsonData);
 
             return servers ?? new List<Server>();
         }
 
-        public void AddServer(Server newServer)
+        public async Task AddServerAsync(Server newServer)
         {
-            var servers = GetServers();
+            var servers = await GetServersAsync();
             servers.Add(newServer);
 
             var jsonData = JsonConvert.SerializeObject(servers);
-            File.WriteAllText(_file, jsonData);
+            await File.WriteAllTextAsync(_file, jsonData);
         }
     }
 }

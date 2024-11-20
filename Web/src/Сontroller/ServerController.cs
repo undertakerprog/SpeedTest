@@ -16,11 +16,11 @@ namespace Web.src.Сontroller
         }
 
         [HttpGet("list")]
-        public IActionResult GetServerList()
+        public async Task<IActionResult> GetServerList()
         {
             try
             {
-                var servers = _serverService.GetServers();
+                var servers = await _serverService.GetServersAsync();
                 return Ok(servers);
             }
             catch (FileNotFoundException ex)
@@ -34,7 +34,7 @@ namespace Web.src.Сontroller
         }
 
         [HttpPost("add")]
-        public IActionResult AddServer([FromBody] Server newServer)
+        public async Task<IActionResult>AddServer([FromBody] Server newServer)
         {
             if (newServer == null || string.IsNullOrEmpty(newServer.Country) || string.IsNullOrEmpty(newServer.Host))
             {
@@ -42,7 +42,7 @@ namespace Web.src.Сontroller
             }
             try
             {
-                _serverService.AddServer(newServer);
+                await _serverService.AddServerAsync(newServer);
                 return Ok("Server added succesfully");
             }
             catch (Exception ex) 

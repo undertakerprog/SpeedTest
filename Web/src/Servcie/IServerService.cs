@@ -4,7 +4,7 @@ namespace Web.src.Servcie
 {
     public interface IServerService
     {
-        List<Server> GetServers();
-        void AddServer(Server newServer);
+        Task<List<Server>> GetServersAsync();
+        Task AddServerAsync(Server newServer);
     }
 }
