@@ -34,5 +34,20 @@ namespace Web.src.Servcie
             var jsonData = JsonConvert.SerializeObject(servers, Formatting.Indented);
             await File.WriteAllTextAsync(_file, jsonData);
         }
+
+        public async Task DeleteServerAsync (string country)
+        {
+            var servers = await GetServersAsync();
+            var serverToRemove = servers.FirstOrDefault(s => s.Country.Equals(country, StringComparison.OrdinalIgnoreCase));
+
+            if (serverToRemove == null)
+            {
+                throw new InvalidOperationException($"Server for country: {country} not found");
+            }
+            servers.Remove(serverToRemove);
+
+            var jsonData = JsonConvert.SerializeObject(servers, Formatting.Indented);
+            await File.WriteAllTextAsync(_file, jsonData);
+        }
     }
 }

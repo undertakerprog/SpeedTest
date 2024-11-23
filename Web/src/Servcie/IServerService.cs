@@ -7,5 +7,6 @@ namespace Web.src.Servcie
         Task<List<Server>> GetServersAsync();
         Task AddServerAsync(Server newServer);
         Task UpdateSereverAsync(List<Server> servers);
+        Task DeleteServerAsync(string country);
     }
 }

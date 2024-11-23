@@ -77,5 +77,27 @@ namespace Web.src.Сontroller
                 return StatusCode(500, $"Server error: {ex.Message}");
             }
         }
+
+        [HttpDelete("delete")]
+        public async Task<IActionResult> DeleteServer([FromQuery] string country)
+        {
+            if (string.IsNullOrEmpty(country))
+            {
+                return BadRequest("Country can't be null or empty");
+            }
+            try
+            {
+                await _serverService.DeleteServerAsync(country);
+                return Ok($"Server for country: '{country}' successfully deleted");
+            }
+            catch (InvalidOperationException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Server error: {ex.Message}");
+            }
+        }
     }
 }
