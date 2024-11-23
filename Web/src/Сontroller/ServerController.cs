@@ -69,7 +69,7 @@ namespace Web.src.Сontroller
                 }
                 var oldHost = server.Host;
                 server.Host = request.NewHost;
-                await _serverService.SaveSereverAsync(servers);
+                await _serverService.UpdateSereverAsync(servers);
                 return Ok($"Host for country {request.Country} update form {oldHost} to {request.NewHost}");
             }
             catch (Exception ex)

@@ -29,7 +29,7 @@ namespace Web.src.Servcie
             await File.WriteAllTextAsync(_file, jsonData);
         }
 
-        public async Task SaveSereverAsync(List<Server> servers)
+        public async Task UpdateSereverAsync(List<Server> servers)
         {
             var jsonData = JsonConvert.SerializeObject(servers, Formatting.Indented);
             await File.WriteAllTextAsync(_file, jsonData);

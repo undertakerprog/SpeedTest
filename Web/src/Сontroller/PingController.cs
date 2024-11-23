@@ -17,7 +17,7 @@ namespace Web.src.Сontroller
         }
 
         [HttpPost("country-ping")]
-        public async Task<IActionResult> GetPingServer([FromBody] string country)
+        public async Task<IActionResult> GetPingCountry([FromBody] string country)
         {
             if (string.IsNullOrWhiteSpace(country))
             {
@@ -36,6 +36,21 @@ namespace Web.src.Сontroller
             {
                 Country = server.Country,
                 Host = server.Host,
+                PingResult = pingResult
+            });
+        }
+
+        [HttpPost("host-ping")]
+        public async Task<IActionResult> GetPingHost([FromBody] string  host)
+        {
+            if (string.IsNullOrWhiteSpace(host))
+            {
+                return BadRequest("Host can't be null or empty");
+            }
+            var pingResult = await _pingService.CheckPingAsync(host);
+            return Ok(new
+            {
+                Host = host,
                 PingResult = pingResult
             });
         }
