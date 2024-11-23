@@ -76,5 +76,31 @@ namespace Web.src.Сontroller
                 PingResult = pingResult
             });
         }
+
+        [HttpPut("update")]
+        public async Task<IActionResult> UpdateHost([FromBody] UpdateHostRequest request)
+        {
+            if (request == null || string.IsNullOrEmpty(request.Country) || string.IsNullOrEmpty(request.NewHost))
+            {
+                return BadRequest("Enter correct data");
+            }
+            try
+            {
+                var servers = await _serverService.GetServersAsync();
+                var server = servers.FirstOrDefault(s => s.Country.Equals(request.Country, StringComparison.OrdinalIgnoreCase));
+                if (server == null)
+                {
+                    return NotFound("$\"Server for country: {country} not found\"");
+                }
+                var oldHost = server.Host;
+                server.Host = request.NewHost;
+                await _serverService.SaveSereverAsync(servers);
+                return Ok($"Host for country {request.Country} update form {oldHost} to {request.NewHost}");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Server error: {ex.Message}");
+            }
+        }
     }
 }

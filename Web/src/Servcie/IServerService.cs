@@ -6,5 +6,6 @@ namespace Web.src.Servcie
     {
         Task<List<Server>> GetServersAsync();
         Task AddServerAsync(Server newServer);
+        Task SaveSereverAsync(List<Server> servers);
     }
 }
