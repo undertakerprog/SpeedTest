@@ -1,1 +1,26 @@
-[{"Country":"Germany","Host":"1.1.1.1"},{"Country":"Japan","Host":"202.238.95.94"},{"Country":"Russia","Host":"yandex.ru"},{"Country":"France","Host":"212.27.40.240"},{"Country":"China","Host":"223.5.5.5"},{"Country":"USA","Host":"8.8.8.8"}]
+[
+  {
+    "Country": "USA",
+    "Host": "8.8.8.8",
+    "Latitude": 39.03,
+    "Longitude": -77.5
+  },
+  {
+    "Country": "Australia",
+    "Host": "1.1.1.1",
+    "Latitude": -27.4766,
+    "Longitude": 153.0166
+  },
+  {
+    "Country": "China",
+    "Host": "223.5.5.5",
+    "Latitude": 30.2994,
+    "Longitude": 120.1612
+  },
+  {
+    "Country": "France",
+    "Host": "212.27.40.240",
+    "Latitude": 48.7529,
+    "Longitude": 2.3224
+  }
+]

@@ -20,9 +20,25 @@ namespace Web.src.Servcie
             return servers ?? new List<Server>();
         }
 
-        public async Task AddServerAsync(Server newServer)
+        public async Task AddServerAsync(string host)
         {
             var servers = await GetServersAsync();
+            var existingServer = servers.FirstOrDefault(s => s.Host == host);
+            if (existingServer != null)
+            {
+                throw new Exception($"Server with host: {host} already exists");
+            }
+            var locationService = new LocationService();
+            var (latitude, longitude, country) = await locationService.GetLocationByIPAsync(host);
+
+            var newServer = new Server
+            {
+                Host = host,
+                Latitude = latitude,
+                Longitude = longitude,
+                Country = country
+            };
+            
             servers.Add(newServer);
 
             var jsonData = JsonConvert.SerializeObject(servers);

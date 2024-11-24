@@ -35,15 +35,15 @@ namespace Web.src.Сontroller
         }
 
         [HttpPost("add")]
-        public async Task<IActionResult>AddServer([FromBody] Server newServer)
+        public async Task<IActionResult>AddServer([FromBody] string host)
         {
-            if (newServer == null || string.IsNullOrEmpty(newServer.Country) || string.IsNullOrEmpty(newServer.Host))
+            if (string.IsNullOrEmpty(host))
             {
                 return BadRequest("Enter correct data");
             }
             try
             {
-                await _serverService.AddServerAsync(newServer);
+                await _serverService.AddServerAsync(host);
                 return Ok("Server added succesfully");
             }
             catch (Exception ex) 
