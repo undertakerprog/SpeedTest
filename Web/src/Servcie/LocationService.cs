@@ -1,5 +1,4 @@
-﻿using System.Runtime.InteropServices;
-using System.Text.Json;
+﻿using System.Text.Json;
 
 namespace Web.src.Servcie
 {
@@ -30,7 +29,7 @@ namespace Web.src.Servcie
             var longitude = jsonDocument.RootElement.GetProperty("lon").GetDouble();
             var country = jsonDocument.RootElement.GetProperty("country").GetString() ?? "Unknown county";
 
-            return(latitude, longitude, country);
+            return (latitude, longitude, country);
         }
     }
 }

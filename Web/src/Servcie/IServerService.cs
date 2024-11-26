@@ -7,6 +7,7 @@ namespace Web.src.Servcie
         Task<List<Server>> GetServersAsync();
         Task AddServerAsync(string host);
         Task UpdateSereverAsync(List<Server> servers);
-        Task DeleteServerAsync(string country);
+        Task DeleteServerAsync(string country, string? host = null);
+        Task DeleteAllServerAsync(string country);
     }
 }

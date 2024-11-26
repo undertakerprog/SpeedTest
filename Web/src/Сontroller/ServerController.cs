@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Web.src.Servcie;
 using Web.src.Model;
-using System.Net.NetworkInformation;
 
 namespace Web.src.Сontroller
 {
@@ -44,7 +43,9 @@ namespace Web.src.Сontroller
             try
             {
                 await _serverService.AddServerAsync(host);
-                return Ok("Server added succesfully");
+                var servers = await _serverService.GetServersAsync();
+                var server = servers.FirstOrDefault(s => s.Host.Equals(host, StringComparison.OrdinalIgnoreCase)) ?? new Server();
+                return Ok($"Server added succesfully({server.Host}).\nCountry: {server.Country} \n");
             }
             catch (Exception ex) 
             {
@@ -65,7 +66,7 @@ namespace Web.src.Сontroller
                 var server = servers.FirstOrDefault(s => s.Country.Equals(request.Country, StringComparison.OrdinalIgnoreCase));
                 if (server == null)
                 {
-                    return NotFound("$\"Server for country: {country} not found\"");
+                    return NotFound($"Server for country: {request.Country} not found");
                 }
                 var oldHost = server.Host;
                 server.Host = request.NewHost;
@@ -78,8 +79,34 @@ namespace Web.src.Сontroller
             }
         }
 
-        [HttpDelete("delete")]
-        public async Task<IActionResult> DeleteServer([FromQuery] string country)
+            [HttpDelete("delete-server")]
+            public async Task<IActionResult> DeleteServer([FromQuery] string country, [FromQuery] string? host = null)
+            {
+                if (string.IsNullOrEmpty(country))
+                {
+                    return BadRequest("Country can't be null or empty");
+                }
+                try
+                {
+                    await _serverService.DeleteServerAsync(country, host);
+                    return Ok($"Server successfully deleted for country: {country} with host {host}");
+                }
+                catch (ArgumentException ex)
+                {
+                    return BadRequest(ex.Message);
+                }
+                catch (InvalidOperationException ex)
+                {
+                    return NotFound(ex.Message);
+                }
+                catch (Exception ex)
+                {
+                    return StatusCode(500, $"Server error: {ex.Message}");
+                }
+            }
+
+        [HttpDelete("delete-all")]
+        public async Task<IActionResult> DeleteAllServer([FromBody] string country)
         {
             if (string.IsNullOrEmpty(country))
             {
@@ -87,8 +114,8 @@ namespace Web.src.Сontroller
             }
             try
             {
-                await _serverService.DeleteServerAsync(country);
-                return Ok($"Server for country: '{country}' successfully deleted");
+                await _serverService.DeleteAllServerAsync(country);
+                return Ok($"All servers for country: '{country}' successfully deleted");
             }
             catch (InvalidOperationException ex)
             {

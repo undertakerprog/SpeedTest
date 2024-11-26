@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Web.src.Servcie;
+using Web.src.Model;
 
 namespace Web.src.Сontroller
 {
@@ -17,37 +18,63 @@ namespace Web.src.Сontroller
         }
 
         [HttpPost("country-ping")]
-        public async Task<IActionResult> GetPingCountry([FromBody] string country)
+        public async Task<IActionResult> PostPingCountry([FromBody] Server selectedServer)
         {
-            if (string.IsNullOrWhiteSpace(country))
+            if (selectedServer == null || string.IsNullOrEmpty(selectedServer.Country))
             {
-                return BadRequest("Country name can't be null or empty");
+                return BadRequest("Country can't be null or empty");
             }
 
             var servers = await _serverService.GetServersAsync();
-            var server = servers.FirstOrDefault(s => s.Country.Equals(country, StringComparison.OrdinalIgnoreCase));
-            if (server == null)
+
+            var countryServers = servers.Where(s => s.Country.Equals(selectedServer.Country, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+
+            if (countryServers == null)
             {
-                return NotFound($"Server for country: {country} not found");
+                return NotFound($"Country: {selectedServer.Country} not found");
             }
-            var pingResult = await _pingService.CheckPingAsync(server.Host);
+
+            if (countryServers.Count > 1)
+            {
+                if (string.IsNullOrEmpty(selectedServer.Host))
+                {
+                    return BadRequest($"Multiple servers found for {selectedServer.Country}. Please specify the 'Host' field.");
+                }
+                var server = countryServers.FirstOrDefault(s => s.Host.Equals(selectedServer.Host, StringComparison.OrdinalIgnoreCase));
+                if (server == null)
+                {
+                    return NotFound($"Server with host: {selectedServer.Host} not found in country {selectedServer.Country}");
+                }
+                var pingResult = await _pingService.CheckPingAsync(server.Host);
+                return Ok(new
+                {
+                    Country = server.Country,
+                    Host = server.Host,
+                    PingResult = pingResult
+                });
+            }
+
+            var singleServer = countryServers.First();
+            var singlePingResult = await _pingService.CheckPingAsync(singleServer.Host);
 
             return Ok(new
             {
-                Country = server.Country,
-                Host = server.Host,
-                PingResult = pingResult
+                Country = singleServer.Country,
+                Host = singleServer.Host,
+                PingResult = singlePingResult
             });
         }
 
         [HttpPost("host-ping")]
-        public async Task<IActionResult> GetPingHost([FromBody] string  host)
+        public async Task<IActionResult> PostPingHost([FromBody] string host)
         {
             if (string.IsNullOrWhiteSpace(host))
             {
                 return BadRequest("Host can't be null or empty");
             }
             var pingResult = await _pingService.CheckPingAsync(host);
+
             return Ok(new
             {
                 Host = host,

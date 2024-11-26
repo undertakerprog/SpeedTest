@@ -51,18 +51,51 @@ namespace Web.src.Servcie
             await File.WriteAllTextAsync(_file, jsonData);
         }
 
-        public async Task DeleteServerAsync (string country)
+        public async Task DeleteServerAsync(string country, string? host = null)
         {
             var servers = await GetServersAsync();
-            var serverToRemove = servers.FirstOrDefault(s => s.Country.Equals(country, StringComparison.OrdinalIgnoreCase));
+            var countryServer = servers.Where(s => s.Country.Equals(country, StringComparison.OrdinalIgnoreCase)).ToList();
 
-            if (serverToRemove == null)
+            if (!countryServer.Any())
             {
-                throw new InvalidOperationException($"Server for country: {country} not found");
+                throw new InvalidOperationException($"No server for country: {country}");
+            }
+
+            Server? serverToRemove;
+
+            if (countryServer.Count() > 1)
+            {
+                if (string.IsNullOrEmpty(host))
+                {
+                    throw new ArgumentException($"Multiple servers found for country: {country}. Please specify the host.");
+                }
+                serverToRemove = countryServer.FirstOrDefault(s => s.Host.Equals(host, StringComparison.OrdinalIgnoreCase));
+                if (serverToRemove == null)
+                {
+                    throw new InvalidOperationException($"Server with host: {host} not found in country: {country}");
+                }
+            }
+            else
+            {
+                serverToRemove = countryServer.First();
             }
             servers.Remove(serverToRemove);
 
             var jsonData = JsonConvert.SerializeObject(servers, Formatting.Indented);
+            await File.WriteAllTextAsync(_file, jsonData);
+        }
+
+        public async Task DeleteAllServerAsync (string country)
+        {
+            var servers = await GetServersAsync();
+            var updatedServer = servers.Where(s => !s.Country.Equals(country, StringComparison.OrdinalIgnoreCase)).ToList();
+
+            if (updatedServer.Count == servers.Count)
+            {
+                throw new InvalidOperationException($"Server for country: {country} not found");
+            }
+
+            var jsonData = JsonConvert.SerializeObject(updatedServer, Formatting.Indented);
             await File.WriteAllTextAsync(_file, jsonData);
         }
     }
