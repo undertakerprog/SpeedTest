@@ -15,10 +15,12 @@ namespace Web.src.controller
         }
 
         [HttpGet("interface")]
-        public IActionResult GetSpeed()
+        public IActionResult GetInterface()
         {
             var result = _speedTestService.GetInterface();
             return Ok(result);
         }
+
+
     }
 }

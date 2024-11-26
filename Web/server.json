@@ -1,14 +1,1 @@
-[
-  {
-    "Country": "Australia",
-    "Host": "1.1.1.1",
-    "Latitude": -27.4766,
-    "Longitude": 153.0166
-  },
-  {
-    "Country": "United States",
-    "Host": "8.8.8.8",
-    "Latitude": 39.03,
-    "Longitude": -77.5
-  }
-]
+[{"Country":"United States","City":"Ashburn","Host":"8.8.8.8","Latitude":39.03,"Longitude":-77.5},{"Country":"Australia","City":"South Brisbane","Host":"1.1.1.1","Latitude":-27.4766,"Longitude":153.0166},{"Country":"United States","City":"Berkeley","Host":"9.9.9.9","Latitude":37.8767,"Longitude":-122.2676},{"Country":"United Kingdom","City":"City of London","Host":"51.140.12.10","Latitude":51.5113,"Longitude":-0.079212},{"Country":"Germany","City":"Dortmund","Host":"185.89.100.1","Latitude":51.4994,"Longitude":7.45179},{"Country":"China","City":"Hangzhou","Host":"223.5.5.5","Latitude":30.2994,"Longitude":120.1612}]

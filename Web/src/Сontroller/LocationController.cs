@@ -33,5 +33,28 @@ namespace Web.src.Сontroller
                 return StatusCode(500, $"Error retrieving location: {ex.Message}");
             }
         }
+
+        [HttpGet("closest")]
+        public async Task<IActionResult> GetClosestServer()
+        {
+            try
+            {
+                var closestServer = await _locationService.GetClosestServerAsync();
+
+                if (closestServer == null)
+                {
+                    return NotFound("No servers found");
+                }
+                return Ok(new
+                {
+                    Message = "Closest server found",
+                    Server = closestServer
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Server error: {ex.Message}");
+            }
+        }
     }
 }

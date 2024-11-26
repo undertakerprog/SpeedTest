@@ -29,14 +29,15 @@ namespace Web.src.Servcie
                 throw new Exception($"Server with host: {host} already exists");
             }
             var locationService = new LocationService();
-            var (latitude, longitude, country) = await locationService.GetLocationByIPAsync(host);
+            var (latitude, longitude, city, country) = await locationService.GetLocationByIPAsync(host);
 
             var newServer = new Server
             {
                 Host = host,
                 Latitude = latitude,
                 Longitude = longitude,
-                Country = country
+                Country = country,
+                City = city
             };
             
             servers.Add(newServer);

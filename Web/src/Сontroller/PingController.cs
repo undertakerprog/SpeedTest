@@ -50,6 +50,7 @@ namespace Web.src.Сontroller
                 return Ok(new
                 {
                     Country = server.Country,
+                    City = server.City,
                     Host = server.Host,
                     PingResult = pingResult
                 });
@@ -61,6 +62,7 @@ namespace Web.src.Сontroller
             return Ok(new
             {
                 Country = singleServer.Country,
+                City = singleServer.City,
                 Host = singleServer.Host,
                 PingResult = singlePingResult
             });

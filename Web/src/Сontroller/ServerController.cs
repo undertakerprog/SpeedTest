@@ -45,7 +45,7 @@ namespace Web.src.Сontroller
                 await _serverService.AddServerAsync(host);
                 var servers = await _serverService.GetServersAsync();
                 var server = servers.FirstOrDefault(s => s.Host.Equals(host, StringComparison.OrdinalIgnoreCase)) ?? new Server();
-                return Ok($"Server added succesfully({server.Host}).\nCountry: {server.Country} \n");
+                return Ok($"Server added succesfully({server.Host}).\nCountry: {server.Country}\nCity: {server.City} \n");
             }
             catch (Exception ex) 
             {
