@@ -7,20 +7,20 @@ namespace Web.src.Servcie
     {
         public string GetInterface()
         {
-            IPGlobalProperties computerProperties = IPGlobalProperties.GetIPGlobalProperties();
-            NetworkInterface[] nics = NetworkInterface.GetAllNetworkInterfaces();
-            if (nics == null || nics.Length < 1)
+            var computerProperties = IPGlobalProperties.GetIPGlobalProperties();
+            var nics = NetworkInterface.GetAllNetworkInterfaces();
+            if (nics.Length < 1)
             {
                 return "No network interfaces found";
             }
 
-            StringBuilder result = new StringBuilder();
+            var result = new StringBuilder();
 
-            foreach (NetworkInterface adapter in nics)
+            foreach (var adapter in nics)
             {
-                IPInterfaceProperties properties = adapter.GetIPProperties();
+                var properties = adapter.GetIPProperties();
                 result.Append("Name: " + adapter.Name + "\n");
-                result.Append("Physical Adress: " + adapter.GetPhysicalAddress().ToString() + "\n");
+                result.Append("Physical Address: " + adapter.GetPhysicalAddress().ToString() + "\n");
                 result.Append("Operational status: " + adapter.OperationalStatus + "\n");
 
             }

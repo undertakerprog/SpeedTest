@@ -2,12 +2,7 @@
 {
     public class UpdateHostRequest
     {
-        public string Country { get; set; }
-        public string NewHost { get; set; }
-        public UpdateHostRequest()
-        {
-            Country = "unknown";
-            NewHost = "unknown";
-        }
+        public string Country { get; set; } = "unknown";
+        public string NewHost { get; set; } = "unknown";
     }
 }

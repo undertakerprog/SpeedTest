@@ -5,22 +5,13 @@ namespace Web.src.controller
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class SpeedTestController : Controller
+    public class SpeedTestController(ISpeedTestService speedTestService) : Controller
     {
-        private readonly ISpeedTestService _speedTestService;
-
-        public SpeedTestController(ISpeedTestService speedTestService)
-        {
-            _speedTestService = speedTestService;
-        }
-
         [HttpGet("interface")]
         public IActionResult GetInterface()
         {
-            var result = _speedTestService.GetInterface();
+            var result = speedTestService.GetInterface();
             return Ok(result);
         }
-
-
     }
 }

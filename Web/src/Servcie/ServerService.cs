@@ -5,19 +5,19 @@ namespace Web.src.Servcie
 {
     public class ServerService : IServerService
     {
-        private readonly string _file = "server.json";
+        private const string File = "server.json";
 
         public async Task<List<Server>> GetServersAsync()
         {
-            if (!File.Exists(_file)) 
+            if (!System.IO.File.Exists(File)) 
             {
                 throw new FileNotFoundException("File server.json not found");
             }
 
-            var jsonData = await File.ReadAllTextAsync(_file);
+            var jsonData = await System.IO.File.ReadAllTextAsync(File);
             var servers = JsonConvert.DeserializeObject<List<Server>>(jsonData);
 
-            return servers ?? new List<Server>();
+            return servers ?? [];
         }
 
         public async Task AddServerAsync(string host)
@@ -43,13 +43,13 @@ namespace Web.src.Servcie
             servers.Add(newServer);
 
             var jsonData = JsonConvert.SerializeObject(servers);
-            await File.WriteAllTextAsync(_file, jsonData);
+            await System.IO.File.WriteAllTextAsync(File, jsonData);
         }
 
-        public async Task UpdateSereverAsync(List<Server> servers)
+        public async Task UpdateServerAsync(List<Server> servers)
         {
             var jsonData = JsonConvert.SerializeObject(servers, Formatting.Indented);
-            await File.WriteAllTextAsync(_file, jsonData);
+            await System.IO.File.WriteAllTextAsync(File, jsonData);
         }
 
         public async Task DeleteServerAsync(string country, string? host = null)
@@ -83,7 +83,7 @@ namespace Web.src.Servcie
             servers.Remove(serverToRemove);
 
             var jsonData = JsonConvert.SerializeObject(servers, Formatting.Indented);
-            await File.WriteAllTextAsync(_file, jsonData);
+            await System.IO.File.WriteAllTextAsync(File, jsonData);
         }
 
         public async Task DeleteAllServerAsync (string country)
@@ -97,7 +97,7 @@ namespace Web.src.Servcie
             }
 
             var jsonData = JsonConvert.SerializeObject(updatedServer, Formatting.Indented);
-            await File.WriteAllTextAsync(_file, jsonData);
+            await System.IO.File.WriteAllTextAsync(File, jsonData);
         }
     }
 }

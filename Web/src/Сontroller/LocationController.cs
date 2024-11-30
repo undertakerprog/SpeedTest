@@ -5,27 +5,41 @@ namespace Web.src.Сontroller
 {
     [ApiController]
     [Route("api/location")]
-    public class LocationController : Controller
+    public class LocationController(ILocationService locationService) : Controller
     {
-        private readonly ILocationService _locationService;
-        public LocationController(ILocationService locationService) 
-        {
-            _locationService = locationService;
-        }
-
         [HttpGet("my-location")]
         public async Task<IActionResult> GetUserLocation()
         {
             try
             {
-                var location = await _locationService.GetUserLocationAsync();
+                var location = await locationService.GetUserLocationAsync();
                 return Ok(new
                 {
                     Latitude = location.Latitude,
                     Longitude = location.Longitude,
                     Country = location.Country,
                     City = location.City,
-                    Query = location.Query,
+                    Query = location.Query
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error retrieving location: {ex.Message}");
+            }
+        }
+
+        [HttpPost("host-location")]
+        public async Task<IActionResult> PostHostLocation([FromBody] string host)
+        {
+            try
+            {
+                var location = await locationService.GetLocationByIPAsync(host);
+                return Ok(new
+                {
+                    Latitude = location.Latitude,
+                    Longitude = location.Longtitude,
+                    Country = location.Country,
+                    City = location.City,
                 });
             }
             catch (Exception ex)
@@ -39,7 +53,7 @@ namespace Web.src.Сontroller
         {
             try
             {
-                var closestServer = await _locationService.GetClosestServerAsync();
+                var closestServer = await locationService.GetClosestServerAsync();
 
                 if (closestServer == null)
                 {

@@ -6,17 +6,8 @@ namespace Web.src.Сontroller
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class PingController : Controller
+    public class PingController(IServerService serverService, IPingService pingService) : Controller
     {
-        private readonly IServerService _serverService;
-        private readonly IPingService _pingService;
-
-        public PingController(IServerService serverService, IPingService pingService)
-        {
-            _pingService = pingService;
-            _serverService = serverService;
-        }
-
         [HttpPost("country-ping")]
         public async Task<IActionResult> PostPingCountry([FromBody] Server selectedServer)
         {
@@ -25,7 +16,7 @@ namespace Web.src.Сontroller
                 return BadRequest("Country can't be null or empty");
             }
 
-            var servers = await _serverService.GetServersAsync();
+            var servers = await serverService.GetServersAsync();
 
             var countryServers = servers.Where(s => s.Country.Equals(selectedServer.Country, StringComparison.OrdinalIgnoreCase))
                 .ToList();
@@ -46,7 +37,7 @@ namespace Web.src.Сontroller
                 {
                     return NotFound($"Server with host: {selectedServer.Host} not found in country {selectedServer.Country}");
                 }
-                var pingResult = await _pingService.CheckPingAsync(server.Host);
+                var pingResult = await pingService.CheckPingAsync(server.Host);
                 return Ok(new
                 {
                     Country = server.Country,
@@ -57,7 +48,7 @@ namespace Web.src.Сontroller
             }
 
             var singleServer = countryServers.First();
-            var singlePingResult = await _pingService.CheckPingAsync(singleServer.Host);
+            var singlePingResult = await pingService.CheckPingAsync(singleServer.Host);
 
             return Ok(new
             {
@@ -75,7 +66,7 @@ namespace Web.src.Сontroller
             {
                 return BadRequest("Host can't be null or empty");
             }
-            var pingResult = await _pingService.CheckPingAsync(host);
+            var pingResult = await pingService.CheckPingAsync(host);
 
             return Ok(new
             {

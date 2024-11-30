@@ -13,19 +13,13 @@ namespace Web.src.Servcie
                 DontFragment = true,
             };
             var buffer = new byte[32];  //Packege size
-            int timeout = 5000;
+            const int timeout = 5000;
 
             try
             {
                 var reply = await ping.SendPingAsync(host, timeout, buffer, options);
-                if (reply.Status == IPStatus.Success)
-                {
-                    return $"Ping to {host} successful: {reply.RoundtripTime} ms";
-                }
-                else
-                {
-                    return $"Ping to {host} failed: {reply.Status}";
-                }
+                return reply.Status == IPStatus.Success ? $"Ping to {host} successful: {reply.RoundtripTime} ms" 
+                    : $"Ping to {host} failed: {reply.Status}";
             }
             catch (Exception ex)
             {

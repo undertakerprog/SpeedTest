@@ -6,21 +6,14 @@ namespace Web.src.Сontroller
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class ServerController : Controller
+    public class ServerController(IServerService serverService) : Controller
     {
-        private readonly IServerService _serverService;
-
-        public ServerController(IServerService serverService)
-        {
-            _serverService = serverService;
-        }
-
         [HttpGet("list")]
         public async Task<IActionResult> GetServerList()
         {
             try
             {
-                var servers = await _serverService.GetServersAsync();
+                var servers = await serverService.GetServersAsync();
                 return Ok(servers);
             }
             catch (FileNotFoundException ex)
@@ -42,10 +35,10 @@ namespace Web.src.Сontroller
             }
             try
             {
-                await _serverService.AddServerAsync(host);
-                var servers = await _serverService.GetServersAsync();
+                await serverService.AddServerAsync(host);
+                var servers = await serverService.GetServersAsync();
                 var server = servers.FirstOrDefault(s => s.Host.Equals(host, StringComparison.OrdinalIgnoreCase)) ?? new Server();
-                return Ok($"Server added succesfully({server.Host}).\nCountry: {server.Country}\nCity: {server.City} \n");
+                return Ok($"Server added successfully({server.Host}).\nCountry: {server.Country}\nCity: {server.City} \n");
             }
             catch (Exception ex) 
             {
@@ -62,7 +55,7 @@ namespace Web.src.Сontroller
             }
             try
             {
-                var servers = await _serverService.GetServersAsync();
+                var servers = await serverService.GetServersAsync();
                 var server = servers.FirstOrDefault(s => s.Country.Equals(request.Country, StringComparison.OrdinalIgnoreCase));
                 if (server == null)
                 {
@@ -70,7 +63,7 @@ namespace Web.src.Сontroller
                 }
                 var oldHost = server.Host;
                 server.Host = request.NewHost;
-                await _serverService.UpdateSereverAsync(servers);
+                await serverService.UpdateServerAsync(servers);
                 return Ok($"Host for country {request.Country} update form {oldHost} to {request.NewHost}");
             }
             catch (Exception ex)
@@ -88,7 +81,7 @@ namespace Web.src.Сontroller
                 }
                 try
                 {
-                    await _serverService.DeleteServerAsync(country, host);
+                    await serverService.DeleteServerAsync(country, host);
                     return Ok($"Server successfully deleted for country: {country} with host {host}");
                 }
                 catch (ArgumentException ex)
@@ -114,7 +107,7 @@ namespace Web.src.Сontroller
             }
             try
             {
-                await _serverService.DeleteAllServerAsync(country);
+                await serverService.DeleteAllServerAsync(country);
                 return Ok($"All servers for country: '{country}' successfully deleted");
             }
             catch (InvalidOperationException ex)
