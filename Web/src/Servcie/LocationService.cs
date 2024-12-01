@@ -38,16 +38,24 @@ namespace Web.src.Servcie
 
         public async Task<Server?> GetClosestServerAsync()
         {
-            var (userLat, userLon, _, _, _) = await GetUserLocationAsync();
+            var (userLat, userLon, _, userCity, _) = await GetUserLocationAsync();
             
             var fileContent = await File.ReadAllTextAsync(FilePath);
-            var servers = JsonSerializer.Deserialize<List<Server>>(fileContent) ?? new List<Server>();
+            var servers = JsonSerializer.Deserialize<List<Server>>(fileContent) ?? [];
 
             if (!servers.Any())
             {
                 throw new InvalidOperationException("No server available in the list");
             }
 
+            var serversInSameCity = servers.Where(s => s.City.Equals(userCity, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+
+            return FindClosestServer(userLat, userLon, serversInSameCity.Any() ? serversInSameCity : servers);
+        }
+
+        private static Server? FindClosestServer(double userLat, double userLon, List<Server> servers)
+        {
             Server? closestServer = null;
             var closestDistance = double.MaxValue;
 

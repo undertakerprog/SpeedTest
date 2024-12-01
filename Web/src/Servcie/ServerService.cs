@@ -52,33 +52,33 @@ namespace Web.src.Servcie
             await System.IO.File.WriteAllTextAsync(File, jsonData);
         }
 
-        public async Task DeleteServerAsync(string country, string? host = null)
+        public async Task DeleteServerAsync(string city, string? host = null)
         {
             var servers = await GetServersAsync();
-            var countryServer = servers.Where(s => s.Country.Equals(country, StringComparison.OrdinalIgnoreCase)).ToList();
+            var cityServer = servers.Where(s => s.City.Equals(city, StringComparison.OrdinalIgnoreCase)).ToList();
 
-            if (!countryServer.Any())
+            if (!cityServer.Any())
             {
-                throw new InvalidOperationException($"No server for country: {country}");
+                throw new InvalidOperationException($"No server for city: {city}");
             }
 
             Server? serverToRemove;
 
-            if (countryServer.Count() > 1)
+            if (cityServer.Count() > 1)
             {
                 if (string.IsNullOrEmpty(host))
                 {
-                    throw new ArgumentException($"Multiple servers found for country: {country}. Please specify the host.");
+                    throw new ArgumentException($"Multiple servers found for city: {city}. Please specify the host.");
                 }
-                serverToRemove = countryServer.FirstOrDefault(s => s.Host.Equals(host, StringComparison.OrdinalIgnoreCase));
+                serverToRemove = cityServer.FirstOrDefault(s => s.Host.Equals(host, StringComparison.OrdinalIgnoreCase));
                 if (serverToRemove == null)
                 {
-                    throw new InvalidOperationException($"Server with host: {host} not found in country: {country}");
+                    throw new InvalidOperationException($"Server with host: {host} not found in city: {city}");
                 }
             }
             else
             {
-                serverToRemove = countryServer.First();
+                serverToRemove = cityServer.First();
             }
             servers.Remove(serverToRemove);
 

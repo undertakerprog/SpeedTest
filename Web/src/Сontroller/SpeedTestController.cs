@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Web.src.Servcie;
 
-namespace Web.src.controller
+namespace Web.src.Сontroller
 {
     [ApiController]
     [Route("api/[controller]")]

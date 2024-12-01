@@ -73,16 +73,16 @@ namespace Web.src.Сontroller
         }
 
             [HttpDelete("delete-server")]
-            public async Task<IActionResult> DeleteServer([FromQuery] string country, [FromQuery] string? host = null)
+            public async Task<IActionResult> DeleteServer([FromQuery] string city, [FromQuery] string? host = null)
             {
-                if (string.IsNullOrEmpty(country))
+                if (string.IsNullOrEmpty(city))
                 {
                     return BadRequest("Country can't be null or empty");
                 }
                 try
                 {
-                    await serverService.DeleteServerAsync(country, host);
-                    return Ok($"Server successfully deleted for country: {country} with host {host}");
+                    await serverService.DeleteServerAsync(city, host);
+                    return Ok($"Server successfully deleted for city: {city} with host {host}");
                 }
                 catch (ArgumentException ex)
                 {

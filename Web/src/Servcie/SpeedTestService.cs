@@ -26,5 +26,7 @@ namespace Web.src.Servcie
             }
             return "Number of interfaces: " + nics.Length + "\nHost Name " + computerProperties.HostName + "\n" + result;
         }
+
+
     }
 }
