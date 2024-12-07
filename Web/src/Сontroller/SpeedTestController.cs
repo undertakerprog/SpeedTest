@@ -13,5 +13,22 @@ namespace Web.src.Сontroller
             var result = speedTestService.GetInterface();
             return Ok(result);
         }
+
+        [HttpGet("fast-test")]
+        public async Task<IActionResult> GetFastDownloadSpeed()
+        {
+            try
+            {
+                var speed = await speedTestService.MeasureDownloadSpeedAsync(TimeSpan.FromSeconds(7));
+                return Ok(new
+                {
+                    SpeedMbps = speed
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Server error: {ex.Message}");
+            }
+        }
     }
 }
