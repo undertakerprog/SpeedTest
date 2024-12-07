@@ -5,6 +5,7 @@ namespace Web.src.Servcie
     public interface ISpeedTestService
     {
         string GetInterface();
-        Task<double> MeasureDownloadSpeedAsync(TimeSpan duration);
+        Task<double> FastDownloadSpeedAsync(TimeSpan duration);
+        Task<DownloadSpeed> GetDownloadSpeed();
     }
 }

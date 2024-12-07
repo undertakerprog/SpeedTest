@@ -2,9 +2,9 @@
 {
     public class DownloadSpeed
     {
-        public Server? Server { get; internal set; }
-        public double Speed { get; internal set; }
-        public string Unit { get; internal set; }
+        public Server Server { get; set; }
+        public double Speed { get; set; }
+        public string Unit { get; set; }
         public string Source { get; set; }
     }
 }

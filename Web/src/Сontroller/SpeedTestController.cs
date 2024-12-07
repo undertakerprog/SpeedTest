@@ -14,12 +14,26 @@ namespace Web.src.Сontroller
             return Ok(result);
         }
 
+        [HttpGet("download-speed")]
+        public async Task<IActionResult> GetDownloadSpeed()
+        {
+            try
+            {
+                var result = await speedTestService.GetDownloadSpeed();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
         [HttpGet("fast-test")]
         public async Task<IActionResult> GetFastDownloadSpeed()
         {
             try
             {
-                var speed = await speedTestService.MeasureDownloadSpeedAsync(TimeSpan.FromSeconds(7));
+                var speed = await speedTestService.FastDownloadSpeedAsync(TimeSpan.FromSeconds(7));
                 return Ok(new
                 {
                     SpeedMbps = speed
