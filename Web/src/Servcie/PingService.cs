@@ -4,7 +4,7 @@ namespace Web.src.Servcie
 {
     public class PingService : IPingService
     {
-        public async Task<string> CheckPingAsync(string host)
+        public async Task<double> CheckPingAsync(string host)
         {
             using var ping = new Ping();
             var options = new PingOptions
@@ -18,12 +18,11 @@ namespace Web.src.Servcie
             try
             {
                 var reply = await ping.SendPingAsync(host, timeout, buffer, options);
-                return reply.Status == IPStatus.Success ? $"Ping to {host} successful: {reply.RoundtripTime} ms" 
-                    : $"Ping to {host} failed: {reply.Status}";
+                return reply.Status == IPStatus.Success ? reply.RoundtripTime : double.MaxValue;
             }
-            catch (Exception ex)
+            catch
             {
-                return $"Error pining {host}: {ex.Message}";
+                return double.MaxValue;
             }
         }
     }

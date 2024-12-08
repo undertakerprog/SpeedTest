@@ -70,5 +70,27 @@ namespace Web.src.Сontroller
                 return StatusCode(500, $"Server error: {ex.Message}");
             }
         }
+
+        [HttpGet("best-server")]
+        public async Task<IActionResult> GetBestServer()
+        {
+            try
+            {
+                var bestServer = await locationService.GetBestServerAsync();
+                if (bestServer == null)
+                {
+                    return NotFound("No servers found");
+                }
+                return Ok(new
+                {
+                    Message = "Closest server found",
+                    Server = bestServer
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Server error: {ex.Message}");
+            }
+        }
     }
 }

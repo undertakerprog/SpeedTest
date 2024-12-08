@@ -28,6 +28,7 @@ namespace Web.src.Servcie
             {
                 throw new Exception($"Server with host: {host} already exists");
             }
+
             var locationService = new LocationService();
             var (latitude, longitude, city, country) = await locationService.GetLocationByIPAsync(host);
 

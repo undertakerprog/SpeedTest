@@ -47,7 +47,7 @@ namespace Web.src.Сontroller
         }
 
         [HttpPut("update")]
-        public async Task<IActionResult> UpdateHost([FromBody] UpdateHostRequest request)
+        public async Task<IActionResult> UpdateHost([FromBody] UpdateHostRequest? request)
         {
             if (request == null || string.IsNullOrEmpty(request.Country) || string.IsNullOrEmpty(request.NewHost))
             {

@@ -39,19 +39,55 @@ namespace Web.src.Servcie
         public async Task<Server?> GetClosestServerAsync()
         {
             var (userLat, userLon, _, userCity, _) = await GetUserLocationAsync();
-            
-            var fileContent = await File.ReadAllTextAsync(FilePath);
-            var servers = JsonSerializer.Deserialize<List<Server>>(fileContent) ?? [];
 
-            if (!servers.Any())
-            {
-                throw new InvalidOperationException("No server available in the list");
-            }
-
-            var serversInSameCity = servers.Where(s => s.City.Equals(userCity, StringComparison.OrdinalIgnoreCase))
-                .ToList();
+            var servers = await LoadServersAsync();
+            var serversInSameCity = FilterServersByCity(servers, userCity);
 
             return FindClosestServer(userLat, userLon, serversInSameCity.Any() ? serversInSameCity : servers);
+        }
+
+        public async Task<Server?> GetBestServerAsync()
+        {
+            var (userLat, userLon, _, userCity, _) = await GetUserLocationAsync();
+
+            var servers = await LoadServersAsync();
+
+            var serversInSameCity = FilterServersByCity(servers, userCity);
+            var relevantServers = serversInSameCity.Any() ? serversInSameCity : servers;
+
+            Server? bestServer = null;
+            var bestPing = double.MaxValue;
+
+            var pingService = new PingService();
+
+            foreach (var server in relevantServers)
+            {
+                var ping = await pingService.CheckPingAsync(server.Host);
+                if (!(ping < bestPing)) continue;
+                bestPing = ping;
+                bestServer = server;
+            }
+
+            return bestServer;
+        }
+
+        private static async Task<List<Server>> LoadServersAsync()
+        {
+            var fileContent = await File.ReadAllTextAsync(FilePath);
+            var servers = JsonSerializer.Deserialize<List<Server>>(fileContent) ?? [];
+            if (!servers.Any())
+            {
+                throw new Exception("No server available in the list");
+            }
+
+            return servers;
+        }
+
+        private static List<Server> FilterServersByCity(IEnumerable<Server> servers, string city)
+        {
+            return servers
+                .Where(s => s.City.Equals(city, StringComparison.OrdinalIgnoreCase))
+                .ToList();
         }
 
         private static Server? FindClosestServer(double userLat, double userLon, List<Server> servers)
