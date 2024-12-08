@@ -5,6 +5,7 @@
         public Server Server { get; set; } = new Server();
         public double Speed { get; set; }
         public string Unit { get; set; } = "unknown";
+        public double Ping { get; set; }
         public string Source { get; set; } = "unknown";
     }
 }

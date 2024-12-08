@@ -58,6 +58,8 @@ namespace Web.src.Servcie
             try
             {
                 var server = await locationService.GetBestServerAsync();
+                var pingService = new PingService();
+                var ping = await pingService.CheckPingAsync(server!.Host);
                 if (server == null)
                 {
                     throw new Exception("No server found for testing");
@@ -81,6 +83,7 @@ namespace Web.src.Servcie
                     Server = server,
                     Speed = Math.Round(speedAverage, 3),
                     Unit = "Mbps",
+                    Ping = ping,
                     Source = "SpeedTestService"
                 };
             }
