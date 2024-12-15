@@ -10,6 +10,7 @@ namespace Web.src.Service
     {
         private static readonly int[] DownloadSizes = [350, 750, 1500, 3000];
         private const int Buffer = 8192;
+        private const double MegabyteSize = 1024;
         public string GetInterface()
         {
             var computerProperties = IPGlobalProperties.GetIPGlobalProperties();
@@ -173,7 +174,7 @@ namespace Web.src.Service
 
             stopwatch.Stop();
             var timeInSeconds = stopwatch.Elapsed.TotalSeconds;
-            var speedInMbps = ((totalBytesRead / 1024.0 / 1024.0) / timeInSeconds) * 8;
+            var speedInMbps = ((totalBytesRead / MegabyteSize / MegabyteSize) / timeInSeconds) * 8;
             return Math.Round(speedInMbps, 3);
         }
     }
