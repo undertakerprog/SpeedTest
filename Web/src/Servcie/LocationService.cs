@@ -22,10 +22,10 @@ namespace Web.src.Servcie
             return (latitude, longitude, country, city, query);
         }
 
-        public async Task<(double Latitude, double Longtitude, string Country, string City)> GetLocationByIPAsync(string ipAdress)
+        public async Task<(double Latitude, double Longtitude, string Country, string City)> GetLocationByIpAsync(string ipAddress)
         {
             using var httpClient = new HttpClient();
-            var response = await httpClient.GetStringAsync($"http://ip-api.com/json/{ipAdress}");
+            var response = await httpClient.GetStringAsync($"http://ip-api.com/json/{ipAddress}");
             var jsonDocument = JsonDocument.Parse(response);
 
             var latitude = jsonDocument.RootElement.GetProperty("lat").GetDouble();
@@ -34,6 +34,12 @@ namespace Web.src.Servcie
             var city = jsonDocument.RootElement.GetProperty("city").GetString() ?? "Unknown county";
 
             return (latitude, longitude, city, country);
+        }
+
+        public async Task<List<Server>> GetServersByCityAsync(string city)
+        {
+            var servers = await LoadServersAsync();
+            return string.IsNullOrWhiteSpace(city) ? servers : FilterServersByCity(servers, city);
         }
 
         public async Task<Server?> GetClosestServerAsync()

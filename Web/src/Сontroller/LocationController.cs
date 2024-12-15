@@ -33,7 +33,7 @@ namespace Web.src.Сontroller
         {
             try
             {
-                var location = await locationService.GetLocationByIPAsync(host);
+                var location = await locationService.GetLocationByIpAsync(host);
                 return Ok(new
                 {
                     Latitude = location.Latitude,
@@ -92,5 +92,31 @@ namespace Web.src.Сontroller
                 return StatusCode(500, $"Server error: {ex.Message}");
             }
         }
+
+        [HttpGet("servers-city-list")]
+        public async Task<IActionResult> GetServersOfCity([FromQuery] string? city)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(city))
+                {
+                    var (_, _, _, userCity, _) = await locationService.GetUserLocationAsync();
+                    city = userCity;
+                }
+
+                var servers = await locationService.GetServersByCityAsync(city);
+
+                if (!servers.Any())
+                {
+                    return NotFound($"Servers with city: {city} not found");
+                }
+
+                return Ok(servers);
+            }
+            catch(Exception ex)
+            {
+                return StatusCode(500, $"Server error: {ex.Message}");
+            }
+        } 
     }
 }

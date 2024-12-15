@@ -1,12 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Web.src.Servcie;
-using Web.src.Model;
 
 namespace Web.src.Сontroller
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class PingController(IServerService serverService, IPingService pingService) : Controller
+    public class PingController(IPingService pingService) : Controller
     {
         [HttpPost("host-ping")]
         public async Task<IActionResult> PostPingHost([FromBody] string host)
@@ -27,7 +26,7 @@ namespace Web.src.Сontroller
                         Message = "Ping failed or host is unreachable"
                     });
                 }
-
+                
                 return Ok(new
                 {
                     Host = host,

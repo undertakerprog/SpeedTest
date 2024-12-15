@@ -30,7 +30,7 @@ namespace Web.src.Servcie
             }
 
             var locationService = new LocationService();
-            var (latitude, longitude, city, country) = await locationService.GetLocationByIPAsync(host);
+            var (latitude, longitude, city, country) = await locationService.GetLocationByIpAsync(host);
 
             var newServer = new Server
             {
