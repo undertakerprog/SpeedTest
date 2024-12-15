@@ -1,9 +1,9 @@
 ﻿using System.Diagnostics;
 using System.Net.NetworkInformation;
 using System.Text;
-using Web.src.Model;
+using Web.Src.Model;
 
-namespace Web.src.Service
+namespace Web.Src.Service
 {
     public class SpeedTestService(IConfiguration configuration, 
         HttpClient httpClient, ILocationService locationService) : ISpeedTestService

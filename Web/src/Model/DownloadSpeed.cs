@@ -1,4 +1,4 @@
-﻿namespace Web.src.Model
+﻿namespace Web.Src.Model
 {
     public class DownloadSpeed
     {

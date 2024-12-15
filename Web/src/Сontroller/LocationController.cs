@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Web.src.Service;
+using Web.Src.Service;
 
-namespace Web.src.Сontroller
+namespace Web.Src.Сontroller
 {
     [ApiController]
     [Route("api/location")]

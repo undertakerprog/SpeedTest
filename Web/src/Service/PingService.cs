@@ -1,6 +1,6 @@
 ﻿using System.Net.NetworkInformation;
 
-namespace Web.src.Service
+namespace Web.Src.Service
 {
     public class PingService : IPingService
     {

@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
-using Web.src.Model;
+using Web.Src.Model;
 
-namespace Web.src.Service
+namespace Web.Src.Service
 {
     public class ServerService : IServerService
     {
