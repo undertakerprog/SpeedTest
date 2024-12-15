@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Web.src.Servcie;
+using Web.src.Service;
 using Web.src.Model;
 
 namespace Web.src.Сontroller
@@ -37,7 +37,8 @@ namespace Web.src.Сontroller
             {
                 await serverService.AddServerAsync(host);
                 var servers = await serverService.GetServersAsync();
-                var server = servers.FirstOrDefault(s => s.Host.Equals(host, StringComparison.OrdinalIgnoreCase)) ?? new Server();
+                var server = servers.FirstOrDefault(s =>
+                    s.Host.Equals(host, StringComparison.OrdinalIgnoreCase)) ?? new Server();
                 return Ok($"Server added successfully({server.Host}).\nCountry: {server.Country}\nCity: {server.City} \n");
             }
             catch (Exception ex) 
@@ -49,14 +50,16 @@ namespace Web.src.Сontroller
         [HttpPut("update")]
         public async Task<IActionResult> UpdateHost([FromBody] UpdateHostRequest? request)
         {
-            if (request == null || string.IsNullOrEmpty(request.Country) || string.IsNullOrEmpty(request.NewHost))
+            if (request == null || string.IsNullOrEmpty(request.Country) || 
+                string.IsNullOrEmpty(request.NewHost))
             {
                 return BadRequest("Enter correct data");
             }
             try
             {
                 var servers = await serverService.GetServersAsync();
-                var server = servers.FirstOrDefault(s => s.Country.Equals(request.Country, StringComparison.OrdinalIgnoreCase));
+                var server = servers.FirstOrDefault(s => 
+                    s.Country.Equals(request.Country, StringComparison.OrdinalIgnoreCase));
                 if (server == null)
                 {
                     return NotFound($"Server for country: {request.Country} not found");
@@ -64,7 +67,8 @@ namespace Web.src.Сontroller
                 var oldHost = server.Host;
                 server.Host = request.NewHost;
                 await serverService.UpdateServerAsync(servers);
-                return Ok($"Host for country {request.Country} update form {oldHost} to {request.NewHost}");
+                return Ok($"Host for country {request.Country} update form " +
+                          $"{oldHost} to {request.NewHost}");
             }
             catch (Exception ex)
             {

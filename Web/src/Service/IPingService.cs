@@ -1,4 +1,4 @@
-﻿namespace Web.src.Servcie
+﻿namespace Web.src.Service
 {
     public interface IPingService
     {

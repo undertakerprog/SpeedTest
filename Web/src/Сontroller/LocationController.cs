@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Web.src.Servcie;
+using Web.src.Service;
 
 namespace Web.src.Сontroller
 {

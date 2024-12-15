@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Web.src.Model;
 
-namespace Web.src.Servcie
+namespace Web.src.Service
 {
     public class ServerService : IServerService
     {
@@ -30,7 +30,8 @@ namespace Web.src.Servcie
             }
 
             var locationService = new LocationService();
-            var (latitude, longitude, city, country) = await locationService.GetLocationByIpAsync(host);
+            var (latitude, longitude, city, country) = 
+                await locationService.GetLocationByIpAsync(host);
 
             var newServer = new Server
             {
@@ -56,25 +57,29 @@ namespace Web.src.Servcie
         public async Task DeleteServerAsync(string city, string? host = null)
         {
             var servers = await GetServersAsync();
-            var cityServer = servers.Where(s => s.City.Equals(city, StringComparison.OrdinalIgnoreCase)).ToList();
+            var cityServer = servers.Where(s => 
+                s.City.Equals(city, StringComparison.OrdinalIgnoreCase)).ToList();
 
-            if (!cityServer.Any())
+            if (cityServer == null)
             {
                 throw new InvalidOperationException($"No server for city: {city}");
             }
 
             Server? serverToRemove;
 
-            if (cityServer.Count() > 1)
+            if (cityServer.Count > 1)
             {
                 if (string.IsNullOrEmpty(host))
                 {
-                    throw new ArgumentException($"Multiple servers found for city: {city}. Please specify the host.");
+                    throw new ArgumentException($"Multiple servers found for city: " +
+                                                $"{city}. Please specify the host.");
                 }
-                serverToRemove = cityServer.FirstOrDefault(s => s.Host.Equals(host, StringComparison.OrdinalIgnoreCase));
+                serverToRemove = cityServer.FirstOrDefault(s => 
+                    s.Host.Equals(host, StringComparison.OrdinalIgnoreCase));
                 if (serverToRemove == null)
                 {
-                    throw new InvalidOperationException($"Server with host: {host} not found in city: {city}");
+                    throw new InvalidOperationException($"Server with host: " +
+                                                        $"{host} not found in city: {city}");
                 }
             }
             else
@@ -90,7 +95,8 @@ namespace Web.src.Servcie
         public async Task DeleteAllServerAsync (string country)
         {
             var servers = await GetServersAsync();
-            var updatedServer = servers.Where(s => !s.Country.Equals(country, StringComparison.OrdinalIgnoreCase)).ToList();
+            var updatedServer = servers.Where(s => 
+                !s.Country.Equals(country, StringComparison.OrdinalIgnoreCase)).ToList();
 
             if (updatedServer.Count == servers.Count)
             {

@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
 using Web.src.Model;
 
-namespace Web.src.Servcie
+namespace Web.src.Service
 {
     public class LocationService : ILocationService
     {
@@ -54,7 +54,7 @@ namespace Web.src.Servcie
 
         public async Task<Server?> GetBestServerAsync()
         {
-            var (userLat, userLon, _, userCity, _) = await GetUserLocationAsync();
+            var (_, _, _, userCity, _) = await GetUserLocationAsync();
 
             var servers = await LoadServersAsync();
 
@@ -81,7 +81,7 @@ namespace Web.src.Servcie
         {
             var fileContent = await File.ReadAllTextAsync(FilePath);
             var servers = JsonSerializer.Deserialize<List<Server>>(fileContent) ?? [];
-            if (!servers.Any())
+            if (servers == null)
             {
                 throw new Exception("No server available in the list");
             }

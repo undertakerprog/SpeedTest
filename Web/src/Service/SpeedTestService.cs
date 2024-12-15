@@ -1,10 +1,9 @@
 ﻿using System.Diagnostics;
 using System.Net.NetworkInformation;
-using System.Security.Authentication;
 using System.Text;
 using Web.src.Model;
 
-namespace Web.src.Servcie
+namespace Web.src.Service
 {
     public class SpeedTestService(IConfiguration configuration, 
         HttpClient httpClient, ILocationService locationService) : ISpeedTestService
@@ -31,7 +30,8 @@ namespace Web.src.Servcie
 
             }
 
-            return "Number of interfaces: " + nics.Length + "\nHost Name " + computerProperties.HostName + "\n" +
+            return "Number of interfaces: " + nics.Length + 
+                   "\nHost Name " + computerProperties.HostName + "\n" +
                    result;
         }
 
@@ -62,7 +62,8 @@ namespace Web.src.Servcie
                 if (host != null)
                 {
                     var servers = await locationService.LoadServersAsync();
-                    server = servers.FirstOrDefault(s => s.Host.Equals(host, StringComparison.OrdinalIgnoreCase));
+                    server = servers.FirstOrDefault(s => 
+                        s.Host.Equals(host, StringComparison.OrdinalIgnoreCase));
                     if (server == null)
                     {
                         throw new Exception($"Server with host '{host}' not found in the server list");
