@@ -77,7 +77,7 @@ namespace Web.src.Servcie
             return bestServer;
         }
 
-        private static async Task<List<Server>> LoadServersAsync()
+        public async Task<List<Server>> LoadServersAsync()
         {
             var fileContent = await File.ReadAllTextAsync(FilePath);
             var servers = JsonSerializer.Deserialize<List<Server>>(fileContent) ?? [];

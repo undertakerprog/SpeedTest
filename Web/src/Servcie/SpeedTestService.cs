@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Net.NetworkInformation;
+using System.Security.Authentication;
 using System.Text;
 using Web.src.Model;
 
@@ -53,17 +54,27 @@ namespace Web.src.Servcie
             }
         }
 
-        public async Task<DownloadSpeed> GetDownloadSpeed()
+        public async Task<DownloadSpeed> GetDownloadSpeed(string? host = null)
         {
             try
             {
-                var server = await locationService.GetBestServerAsync();
+                Server? server;
+                if (host != null)
+                {
+                    var servers = await locationService.LoadServersAsync();
+                    server = servers.FirstOrDefault(s => s.Host.Equals(host, StringComparison.OrdinalIgnoreCase));
+                    if (server == null)
+                    {
+                        throw new Exception($"Server with host '{host}' not found in the server list");
+                    }
+                }
+                else
+                {
+                    server = await locationService.GetBestServerAsync();
+                }
+
                 var pingService = new PingService();
                 var ping = await pingService.CheckPingAsync(server!.Host);
-                if (server == null)
-                {
-                    throw new Exception("No server found for testing");
-                }
 
                 var downloadUrls = GenerateDownloadUrls(server, 3);
 

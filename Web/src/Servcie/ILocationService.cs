@@ -9,5 +9,6 @@ namespace Web.src.Servcie
         Task<List<Server>> GetServersByCityAsync(string city);
         Task<Server?> GetClosestServerAsync();
         Task<Server?> GetBestServerAsync();
+        Task<List<Server>> LoadServersAsync();
     }
 }

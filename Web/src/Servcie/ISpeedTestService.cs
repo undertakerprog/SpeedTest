@@ -6,6 +6,6 @@ namespace Web.src.Servcie
     {
         string GetInterface();
         Task<double> FastDownloadSpeedAsync(TimeSpan duration);
-        Task<DownloadSpeed> GetDownloadSpeed();
+        Task<DownloadSpeed> GetDownloadSpeed(string? host = null);
     }
 }

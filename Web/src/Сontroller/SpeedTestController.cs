@@ -15,11 +15,11 @@ namespace Web.src.Сontroller
         }
 
         [HttpGet("download-speed")]
-        public async Task<IActionResult> GetDownloadSpeed()
+        public async Task<IActionResult> GetDownloadSpeed([FromQuery] string? host)
         {
             try
             {
-                var result = await speedTestService.GetDownloadSpeed();
+                var result = await speedTestService.GetDownloadSpeed(host);
                 return Ok(result);
             }
             catch (Exception ex)
