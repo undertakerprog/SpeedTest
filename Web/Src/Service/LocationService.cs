@@ -3,21 +3,26 @@ using Web.Src.Model;
 
 namespace Web.Src.Service
 {
-    public class LocationService : ILocationService
+    public class LocationService(HttpClient httpClient) : ILocationService
     {
         private const string FilePath = "server.json";
 
         public async Task<(double Latitude, double Longitude, string Country, string City, string Query)> GetUserLocationAsync()
         {
-            using var httpClient = new HttpClient();
             var response = await httpClient.GetStringAsync("http://ip-api.com/json/");
             var jsonDocument = JsonDocument.Parse(response);
 
-            var latitude = jsonDocument.RootElement.GetProperty("lat").GetDouble();
-            var longitude = jsonDocument.RootElement.GetProperty("lon").GetDouble();
-            var country = jsonDocument.RootElement.GetProperty("country").GetString() ?? "Unknown county";
-            var query = jsonDocument.RootElement.GetProperty("query").GetString() ?? "Unknown city";
-            var city = jsonDocument.RootElement.GetProperty("city").GetString() ?? "Unknown query";
+            var root = jsonDocument.RootElement;
+
+            var latitude = root.TryGetProperty("lat", out var latElement) 
+                ? latElement.GetDouble() : 0;
+            var longitude = root.TryGetProperty("lon", out var lonElement) 
+                ? lonElement.GetDouble() : 0;
+            var country = root.TryGetProperty("country", out var countryElement) 
+                ? countryElement.GetString() : "Unknown country";
+            var city = root.TryGetProperty("city", out var cityElement) 
+                ? cityElement.GetString() : "Unknown city";
+            var query = root.TryGetProperty("query", out var queryElement) ? queryElement.GetString() : "Unknown query";
 
             return (latitude, longitude, country, city, query);
         }

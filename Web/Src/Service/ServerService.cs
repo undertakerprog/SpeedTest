@@ -29,7 +29,7 @@ namespace Web.Src.Service
                 throw new Exception($"Server with host: {host} already exists");
             }
 
-            var locationService = new LocationService();
+            var locationService = new LocationService(new HttpClient());
             var (latitude, longitude, city, country) = 
                 await locationService.GetLocationByIpAsync(host);
 

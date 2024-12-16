@@ -11,8 +11,10 @@ namespace WebTest.Src.ModelTest
         {
             var updateHost = new UpdateHostRequest();
 
-            Assert.AreEqual("unknown", updateHost.OldHost, "Old host must be 'unknown' by default");
-            Assert.AreEqual("unknown", updateHost.NewHost, "New host must be 'unknown' by default");
+            Assert.AreEqual("unknown", updateHost.OldHost, 
+                "Old host must be 'unknown' by default");
+            Assert.AreEqual("unknown", updateHost.NewHost, 
+                "New host must be 'unknown' by default");
         }
 
         [TestMethod]
@@ -24,8 +26,10 @@ namespace WebTest.Src.ModelTest
                 NewHost = "new.host.test",
             };
 
-            Assert.AreEqual("old.host.test", updateHost.OldHost, "Old host must be 'old.host.test' by default");
-            Assert.AreEqual("new.host.test", updateHost.NewHost, "New host must be 'new.host.test' by default");
+            Assert.AreEqual("old.host.test", updateHost.OldHost, 
+                "Old host must be 'old.host.test' by default");
+            Assert.AreEqual("new.host.test", updateHost.NewHost, 
+                "New host must be 'new.host.test' by default");
 
         }
 
@@ -42,8 +46,10 @@ namespace WebTest.Src.ModelTest
             var deserialized = JsonSerializer.Deserialize<DownloadSpeed>(json);
 
             Assert.IsNotNull(deserialized, "Deserialization should return the object");
-            Assert.AreEqual("old.host.test", updateHost.OldHost, "Old host must be 'old.host.test' by default");
-            Assert.AreEqual("new.host.test", updateHost.NewHost, "New host must be 'new.host.test' by default");
+            Assert.AreEqual("old.host.test", updateHost.OldHost, 
+                "Old host must be 'old.host.test' by default");
+            Assert.AreEqual("new.host.test", updateHost.NewHost, 
+                "New host must be 'new.host.test' by default");
         }
     }
 }
