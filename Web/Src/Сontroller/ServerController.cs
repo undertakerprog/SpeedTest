@@ -50,7 +50,7 @@ namespace Web.Src.Сontroller
         [HttpPut("update")]
         public async Task<IActionResult> UpdateHost([FromBody] UpdateHostRequest? request)
         {
-            if (request == null || string.IsNullOrEmpty(request.Country) || 
+            if (request == null || string.IsNullOrEmpty(request.OldHost) || 
                 string.IsNullOrEmpty(request.NewHost))
             {
                 return BadRequest("Enter correct data");
@@ -59,15 +59,15 @@ namespace Web.Src.Сontroller
             {
                 var servers = await serverService.GetServersAsync();
                 var server = servers.FirstOrDefault(s => 
-                    s.Country.Equals(request.Country, StringComparison.OrdinalIgnoreCase));
+                    s.Country.Equals(request.OldHost, StringComparison.OrdinalIgnoreCase));
                 if (server == null)
                 {
-                    return NotFound($"Server for country: {request.Country} not found");
+                    return NotFound($"Old host: {request.OldHost} not found");
                 }
                 var oldHost = server.Host;
                 server.Host = request.NewHost;
                 await serverService.UpdateServerAsync(servers);
-                return Ok($"Host for country {request.Country} update form " +
+                return Ok($"Old host {request.OldHost} update form " +
                           $"{oldHost} to {request.NewHost}");
             }
             catch (Exception ex)
@@ -81,7 +81,7 @@ namespace Web.Src.Сontroller
             {
                 if (string.IsNullOrEmpty(city))
                 {
-                    return BadRequest("Country can't be null or empty");
+                    return BadRequest("OldHost can't be null or empty");
                 }
                 try
                 {
@@ -107,7 +107,7 @@ namespace Web.Src.Сontroller
         {
             if (string.IsNullOrEmpty(country))
             {
-                return BadRequest("Country can't be null or empty");
+                return BadRequest("OldHost can't be null or empty");
             }
             try
             {

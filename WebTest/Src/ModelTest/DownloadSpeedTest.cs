@@ -13,9 +13,9 @@ namespace WebTest.Src.ModelTest
 
             Assert.IsNotNull(downloadSpeed.Server, "Server must be initialize");
             Assert.AreEqual(0, downloadSpeed.Speed, "Speed must be 0 by default");
-            Assert.AreEqual("unknown", downloadSpeed.Unit, "Unit must be unknown by default");
+            Assert.AreEqual("unknown", downloadSpeed.Unit, "Unit must be 'unknown' by default");
             Assert.AreEqual(0, downloadSpeed.Ping, "Ping must be 0 by default");
-            Assert.AreEqual("unknown", downloadSpeed.Source, "Source must be unknown by default");
+            Assert.AreEqual("unknown", downloadSpeed.Source, "Source must be 'unknown' by default");
         }
 
         [TestMethod]
