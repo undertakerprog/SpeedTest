@@ -6,7 +6,7 @@ using Web.Src.Model;
 namespace Web.Src.Service
 {
     public class SpeedTestService(IConfiguration configuration, 
-        HttpClient httpClient, ILocationService locationService) : ISpeedTestService
+        ILocationService locationService) : ISpeedTestService
     {
         private static readonly int[] DownloadSizes = [350, 750, 1500, 3000];
         private const int Buffer = 8192;
