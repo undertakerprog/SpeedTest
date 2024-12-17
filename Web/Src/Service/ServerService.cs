@@ -1,23 +1,31 @@
-﻿using Newtonsoft.Json;
+﻿using Infrastructure;
+using Newtonsoft.Json;
 using Web.Src.Model;
 
 namespace Web.Src.Service
 {
-    public class ServerService : IServerService
+    public class ServerService(IFileReader fileReader) : IServerService
     {
         private const string File = "server.json";
 
         public async Task<List<Server>> GetServersAsync()
         {
-            if (!System.IO.File.Exists(File)) 
+            if (!await fileReader.ExistsAsync(File)) 
             {
                 throw new FileNotFoundException("File server.json not found");
             }
 
-            var jsonData = await System.IO.File.ReadAllTextAsync(File);
-            var servers = JsonConvert.DeserializeObject<List<Server>>(jsonData);
+            var jsonData = await fileReader.ReadAllTextAsync(File);
 
-            return servers ?? [];
+            try
+            {
+                var servers = JsonConvert.DeserializeObject<List<Server>>(jsonData);
+                return servers ?? [];
+            }
+            catch (JsonSerializationException)
+            {
+                return [];
+            }
         }
 
         public async Task AddServerAsync(string host)

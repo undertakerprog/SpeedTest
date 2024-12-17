@@ -1,4 +1,5 @@
 using Microsoft.OpenApi.Models;
+using Infrastructure;
 using Web.Src.Service;
 
 namespace Web
@@ -26,6 +27,8 @@ namespace Web
             builder.Services.AddScoped<ILocationService, LocationService>();
             builder.Services.AddScoped<ISpeedTestService, SpeedTestService>();
             builder.Services.AddControllers();
+
+            builder.Services.AddSingleton<IFileReader, FileReader>();
 
             var app = builder.Build();
 
