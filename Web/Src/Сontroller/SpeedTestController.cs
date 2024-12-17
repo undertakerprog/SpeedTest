@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Web.Src.Model.SpeedTest;
 using Web.Src.Service;
 
 namespace Web.Src.Сontroller
@@ -27,7 +28,7 @@ namespace Web.Src.Сontroller
             try
             {
                 var speed = await speedTestService.FastDownloadSpeedAsync(TimeSpan.FromSeconds(7));
-                return Ok(new
+                return Ok(new DownloadSpeedResponse
                 {
                     SpeedMbps = speed
                 });
