@@ -36,10 +36,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Src\ControllerTest\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Web\Web.csproj" />
   </ItemGroup>
 
