@@ -7,7 +7,7 @@ namespace Web.Src.Service
     {
         private const string FilePath = "server.json";
 
-        public async Task<(double Latitude, double Longitude, string Country, string City, string Query)> GetUserLocationAsync()
+        public virtual async Task<(double Latitude, double Longitude, string Country, string City, string Query)> GetUserLocationAsync()
         {
             try
             {

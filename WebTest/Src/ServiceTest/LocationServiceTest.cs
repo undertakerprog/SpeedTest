@@ -10,6 +10,7 @@ namespace WebTest.Src.ServiceTest
     public class LocationServiceTest
     {
         private LocationService? _locationService;
+        private PingService? _mockPingService;
         private const string Host = "8.8.8.8";
         private const string InvalidHost = "invalid-ip";
 
@@ -238,7 +239,7 @@ namespace WebTest.Src.ServiceTest
 
         [TestMethod]
         [ExpectedException(typeof(Exception))]
-        public async Task GetServersByCityAsyncFileReadErrorThrowsException()
+        public async Task GetServersByCityAsync_FileReadErrorThrowsException()
         {
             var mockLocationService = new Mock<LocationService>(Mock.Of<HttpClient>());
             mockLocationService
@@ -246,6 +247,61 @@ namespace WebTest.Src.ServiceTest
                 .ThrowsAsync(new Exception("No server available in the list"));
 
             await mockLocationService.Object.GetServersByCityAsync(string.Empty);
+        }
+
+        [TestMethod]
+        public async Task GetClosestServerAsync_ShouldReturnClosestServerInSameCity()
+        {
+            var testServers = new List<Server>
+            {
+                new () { Latitude = 10.0, Longitude = 10.0, City = "TestCity1", Host = "Server1" },
+                new () { Latitude = 15.0, Longitude = 15.0, City = "TestCity2", Host = "Server2" }
+            };
+
+            var mockService = CreateMockLocationService(testServers);
+
+            mockService.Setup(x => x.GetUserLocationAsync()).
+                ReturnsAsync((10.0, 10.0, "TestCountry", "TestCity", "127.0.0.1"));
+
+            var result = await mockService.Object.GetClosestServerAsync();
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual("Server1", result.Host);
+        }
+
+        [TestMethod]
+        public async Task GetClosestServerAsync_ShouldReturnClosestServerIfNoSameCity()
+        {
+            var testServers = new List<Server>
+            {
+                new () { Latitude = 20.0, Longitude = 20.0, City = "OtherCity1", Host = "Server3" },
+                new () { Latitude = 25.0, Longitude = 25.0, City = "OtherCity2", Host = "Server4" }
+            };
+
+            var mockService = CreateMockLocationService(testServers);
+
+            mockService.Setup(x => x.GetUserLocationAsync()).
+                ReturnsAsync((10.0, 10.0, "TestCountry", "TestCity", "127.0.0.1"));
+
+            var result = await mockService.Object.GetClosestServerAsync();
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual("Server3", result.Host);
+        }
+
+        [TestMethod]
+        public async Task GetClosestServerAsync_ShouldReturnNullIfNoServersAvailable()
+        {
+            var testServers = new List<Server>();
+
+            var mockService = CreateMockLocationService(testServers);
+
+            mockService.Setup(x => x.GetUserLocationAsync()).
+                ReturnsAsync((10.0, 10.0, "TestCountry", "TestCity", "127.0.0.1"));
+
+            var result = await mockService.Object.GetClosestServerAsync();
+
+            Assert.IsNull(result);
         }
 
         private static Mock<LocationService> CreateMockLocationService(List<Server> servers)

@@ -4,7 +4,7 @@ namespace Web.Src.Service
 {
     public class PingService : IPingService
     {
-        public async Task<double> CheckPingAsync(string host)
+        public virtual async Task<double> CheckPingAsync(string host)
         {
             using var ping = new Ping();
             var options = new PingOptions
