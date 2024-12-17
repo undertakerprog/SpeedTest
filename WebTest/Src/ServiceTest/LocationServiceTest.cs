@@ -10,7 +10,6 @@ namespace WebTest.Src.ServiceTest
     public class LocationServiceTest
     {
         private LocationService? _locationService;
-        private PingService? _mockPingService;
         private const string Host = "8.8.8.8";
         private const string InvalidHost = "invalid-ip";
 
@@ -310,6 +309,25 @@ namespace WebTest.Src.ServiceTest
             mockLocationService.Setup(x => x.LoadServersAsync()) 
                 .ReturnsAsync(servers);
             return mockLocationService;
+        }
+
+        [TestMethod]
+        public async Task LoadServersAsync_ShouldReturnListOfServers_WhenUsingRealFile()
+        {
+            var expectedServers = new List<Server>
+            {
+                new () { Latitude = 10.0, Longitude = 10.0, City = "TestCity1", Host = "Server1" },
+                new () { Latitude = 20.0, Longitude = 20.0, City = "TestCity2", Host = "Server2" }
+            };
+
+            var mockLocationService = CreateMockLocationService(expectedServers);
+
+            var result = await mockLocationService.Object.LoadServersAsync();
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(expectedServers.Count, result.Count);
+            Assert.AreEqual(expectedServers[0].Host, result[0].Host);
+            Assert.AreEqual(expectedServers[1].Host, result[1].Host);
         }
 
         private static HttpClient CreateMockHttpClient(string responseContent,
