@@ -7,13 +7,6 @@ namespace Web.Src.Сontroller
     [Route("api/[controller]")]
     public class SpeedTestController(ISpeedTestService speedTestService) : Controller
     {
-        [HttpGet("interface")]
-        public IActionResult GetInterface()
-        {
-            var result = speedTestService.GetInterface();
-            return Ok(result);
-        }
-
         [HttpGet("download-speed")]
         public async Task<IActionResult> GetDownloadSpeed([FromQuery] string? host)
         {

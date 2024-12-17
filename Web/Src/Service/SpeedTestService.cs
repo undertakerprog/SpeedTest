@@ -5,36 +5,15 @@ using Web.Src.Model;
 
 namespace Web.Src.Service
 {
-    public class SpeedTestService(IConfiguration configuration, 
-        ILocationService locationService) : ISpeedTestService
+    public class SpeedTestService(
+        IConfiguration configuration,
+        ILocationService locationService,
+        HttpClient httpClient)
+        : ISpeedTestService
     {
         private static readonly int[] DownloadSizes = [350, 750, 1500, 3000];
         private const int Buffer = 8192;
         private const double MegabyteSize = 1024;
-        public string GetInterface()
-        {
-            var computerProperties = IPGlobalProperties.GetIPGlobalProperties();
-            var nics = NetworkInterface.GetAllNetworkInterfaces();
-            if (nics.Length < 1)
-            {
-                return "No network interfaces found";
-            }
-
-            var result = new StringBuilder();
-
-            foreach (var adapter in nics)
-            {
-                var properties = adapter.GetIPProperties();
-                result.Append("Name: " + adapter.Name + "\n");
-                result.Append("Physical Address: " + adapter.GetPhysicalAddress() + "\n");
-                result.Append("Operational status: " + adapter.OperationalStatus + "\n");
-
-            }
-
-            return "Number of interfaces: " + nics.Length + 
-                   "\nHost Name " + computerProperties.HostName + "\n" +
-                   result;
-        }
 
         public async Task<double> FastDownloadSpeedAsync(TimeSpan duration)
         {
@@ -121,7 +100,7 @@ namespace Web.Src.Service
             }
         }
 
-        private static async Task<double> MeasureDownloadSpeedAsync(IEnumerable<string> downloadUrls)
+        private async Task<double> MeasureDownloadSpeedAsync(IEnumerable<string> downloadUrls)
         {
             double totalSpeed = 0;
             var count = 0;
@@ -143,9 +122,8 @@ namespace Web.Src.Service
             return count > 0 ? Math.Round(totalSpeed / count, 3) : 0;
         }
 
-        private static async Task<double> MeasureDownloadSpeedFromUrlAsync(string url, TimeSpan timeout)
+        private async Task<double> MeasureDownloadSpeedFromUrlAsync(string url, TimeSpan timeout)
         {
-            using var httpClient = new HttpClient();
             httpClient.Timeout = timeout;
 
             var stopwatch = Stopwatch.StartNew();
