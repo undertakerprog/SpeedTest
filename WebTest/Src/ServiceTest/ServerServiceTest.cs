@@ -169,5 +169,63 @@ namespace WebTest.Src.ServiceTest
 
             mockFileReader.Verify(f => f.WriteAllTextAsync(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
         }
+
+        [TestMethod]
+        public async Task DeleteAllServerAsync_RemovesAllServersForCountry()
+        {
+            var mockFileReader = new Mock<IFileReader>();
+            var mockServers = new List<Server>
+            {
+                new() { Host = "host1", City = "City1", Country = "Country1" },
+                new() { Host = "host2", City = "City2", Country = "Country1" },
+                new() { Host = "host3", City = "City3", Country = "Country2" }
+            };
+
+            mockFileReader.Setup(f => f.ExistsAsync(It.IsAny<string>())).ReturnsAsync(true);
+
+            mockFileReader.Setup(f => f.ReadAllTextAsync(It.IsAny<string>())).
+                ReturnsAsync(JsonConvert.SerializeObject(mockServers));
+
+            var serverService = new ServerService(mockFileReader.Object);
+
+            await serverService.DeleteAllServerAsync("Country1");
+
+            var expectedServers = mockServers
+                .Where(s => !s.Country.Equals("Country1", StringComparison.OrdinalIgnoreCase))
+                .ToList();
+
+            var jsonData = JsonConvert.SerializeObject(expectedServers, Formatting.Indented);
+
+            mockFileReader.Verify(f => f.WriteAllTextAsync(It.IsAny<string>(), jsonData), Times.Once,
+                "Метод записи файла должен быть вызван с обновленными данными.");
+
+            Assert.AreEqual(1, expectedServers.Count);
+            Assert.IsFalse(expectedServers.Any(s => s.Country == "Country1"));
+        }
+
+        [TestMethod]
+        public async Task DeleteAllServerAsync_ThrowsException_WhenNoServersForCountry()
+        {
+            var mockFileReader = new Mock<IFileReader>();
+            var mockServers = new List<Server>
+            {
+                new () { Host = "host1", City = "City1", Country = "Country2" },
+                new () { Host = "host2", City = "City2", Country = "Country2" }
+            };
+
+            mockFileReader.Setup(f => f.ExistsAsync(It.IsAny<string>()))
+                .ReturnsAsync(true);
+
+            mockFileReader.Setup(f => f.ReadAllTextAsync(It.IsAny<string>()))
+                .ReturnsAsync(JsonConvert.SerializeObject(mockServers));
+
+            var serverService = new ServerService(mockFileReader.Object);
+            var exception = await Assert.ThrowsExceptionAsync<InvalidOperationException>(
+                async () => await serverService.DeleteAllServerAsync("Country1"));
+
+            Assert.AreEqual("Server for country: Country1 not found", exception.Message);
+
+            mockFileReader.Verify(f => f.WriteAllTextAsync(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+        }
     }
 }

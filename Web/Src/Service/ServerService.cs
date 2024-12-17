@@ -102,7 +102,6 @@ namespace Web.Src.Service
             await fileReader.WriteAllTextAsync(File, jsonData);
         }
 
-
         public async Task DeleteAllServerAsync (string country)
         {
             var servers = await GetServersAsync();
