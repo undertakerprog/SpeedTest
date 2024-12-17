@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Moq;
-using Web.Src.Model;
+using Web.Src.Model.Ping;
 using Web.Src.Service;
 using Web.Src.Сontroller;
 
@@ -82,25 +82,19 @@ namespace WebTest.Src.ControllerTest
             Assert.AreEqual("Ping failed or host is unreachable", response.Message);
         }
 
-
         [TestMethod]
         public async Task PostPingHost_ExceptionThrown_ReturnsInternalServerError()
         {
             const string host = "example.com";
 
-            // Arrange
             _mockPingService!.Setup(s => s.CheckPingAsync(host)).ThrowsAsync(new Exception("Test exception"));
 
-            // Act
             var result = await _pingController!.PostPingHost(host);
 
-            // Assert
             var objectResult = result as ObjectResult;
             Assert.IsNotNull(objectResult);
             Assert.AreEqual(500, objectResult.StatusCode);
-            Assert.IsTrue(objectResult.Value.ToString().Contains("Test exception"));
+            Assert.IsTrue(objectResult.Value!.ToString()!.Contains("Test exception"));
         }
-
-
     }
 }

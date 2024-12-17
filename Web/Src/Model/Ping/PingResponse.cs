@@ -1,4 +1,4 @@
-namespace Web.Src.Model;
+namespace Web.Src.Model.Ping;
 public class PingResponse
 {
     public string? Host { get; set; }

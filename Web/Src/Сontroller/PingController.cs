@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Web.Src.Model;
+using Web.Src.Model.Ping;
 using Web.Src.Service;
 
 namespace Web.Src.Сontroller

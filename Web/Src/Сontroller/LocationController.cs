@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Web.Src.Model.Location;
 using Web.Src.Service;
 
 namespace Web.Src.Сontroller
@@ -13,14 +14,15 @@ namespace Web.Src.Сontroller
             try
             {
                 var location = await locationService.GetUserLocationAsync();
-                return Ok(new
+                var response = new UserLocationResponse
                 {
                     Latitude = location.Latitude,
                     Longitude = location.Longitude,
                     Country = location.Country,
                     City = location.City,
                     Query = location.Query
-                });
+                };
+                return Ok(response);
             }
             catch (Exception ex)
             {
@@ -34,13 +36,15 @@ namespace Web.Src.Сontroller
             try
             {
                 var location = await locationService.GetLocationByIpAsync(host);
-                return Ok(new
+                var response = new HostLocationResponse
                 {
                     Latitude = location.Latitude,
                     Longitude = location.Longtitude,
                     Country = location.Country,
-                    City = location.City,
-                });
+                    City = location.City
+                };
+
+                return Ok(response);
             }
             catch (Exception ex)
             {
@@ -59,11 +63,12 @@ namespace Web.Src.Сontroller
                 {
                     return NotFound("No servers found");
                 }
-                return Ok(new
+                var response = new ServerResponse
                 {
                     Message = "Closest server found",
                     Server = closestServer
-                });
+                };
+                return Ok(response);
             }
             catch (Exception ex)
             {
@@ -81,11 +86,12 @@ namespace Web.Src.Сontroller
                 {
                     return NotFound("No servers found");
                 }
-                return Ok(new
+                var response = new ServerResponse
                 {
-                    Message = "Closest server found",
+                    Message = "Best server found",
                     Server = bestServer
-                });
+                };
+                return Ok(response);
             }
             catch (Exception ex)
             {
