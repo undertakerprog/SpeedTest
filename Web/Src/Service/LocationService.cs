@@ -1,5 +1,4 @@
-﻿using System.Net;
-using System.Text.Json;
+﻿using System.Text.Json;
 using Web.Src.Model;
 
 namespace Web.Src.Service
@@ -117,7 +116,7 @@ namespace Web.Src.Service
             return bestServer;
         }
 
-        public async Task<List<Server>> LoadServersAsync()
+        public virtual async Task<List<Server>> LoadServersAsync()
         {
             var fileContent = await File.ReadAllTextAsync(FilePath);
             var servers = JsonSerializer.Deserialize<List<Server>>(fileContent) ?? [];
