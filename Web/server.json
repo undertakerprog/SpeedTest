@@ -32,14 +32,6 @@
     "Longitude": 69.2075
   },
   {
-    "Country": "unknown",
-    "City": "unknown",
-    "Host": "sp1.afghantelecom.af",
-    "Provider": "Afghan Telecom",
-    "Latitude": 0.0,
-    "Longitude": 0.0
-  },
-  {
     "Country": "Afghanistan",
     "City": "Kabul",
     "Host": "speedtest.etisalat.af",
@@ -78,14 +70,6 @@
     "Provider": "Afghan Wireless",
     "Latitude": 34.5554,
     "Longitude": 69.2075
-  },
-  {
-    "Country": "unknown",
-    "City": "unknown",
-    "Host": "durres.albtelecom.al",
-    "Provider": "Albtelecom sh.a",
-    "Latitude": 0.0,
-    "Longitude": 0.0
   },
   {
     "Country": "Albania",

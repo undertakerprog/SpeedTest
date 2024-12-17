@@ -59,7 +59,7 @@ namespace Web.Src.Сontroller
             {
                 var servers = await serverService.GetServersAsync();
                 var server = servers.FirstOrDefault(s => 
-                    s.Country.Equals(request.OldHost, StringComparison.OrdinalIgnoreCase));
+                    s.Host.Equals(request.OldHost, StringComparison.OrdinalIgnoreCase));
                 if (server == null)
                 {
                     return NotFound($"Old host: {request.OldHost} not found");

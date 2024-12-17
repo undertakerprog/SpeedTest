@@ -1,5 +1,7 @@
 ﻿using Infrastructure;
 using Moq;
+using Newtonsoft.Json;
+using Web.Src.Model;
 using Web.Src.Service;
 
 namespace WebTest.Src.ServiceTest
@@ -7,6 +9,8 @@ namespace WebTest.Src.ServiceTest
     [TestClass]
     public class ServerServiceTest
     {
+        private const string FilePath = "D://C#//SpeedTest//Web//server.json";
+
         [TestMethod]
         public async Task GetServersAsync_ShouldThrowFileNotFoundException_WhenFileDoesNotExist()
         {
@@ -83,6 +87,87 @@ namespace WebTest.Src.ServiceTest
 
             Assert.IsNotNull(result);
             Assert.AreEqual(0, result.Count);
+        }
+
+        [TestMethod]
+        public async Task UpdateServerAsync_ShouldWriteJsonToFile_WhenServersListIsProvided()
+        {
+            var mockFileReader = new Mock<IFileReader>();
+
+            var servers = new List<Server>
+            {
+                new () { Host = "server1", Latitude = 10.0, Longitude = 20.0, Country = "Country1", City = "City1" },
+                new () { Host = "server2", Latitude = 30.0, Longitude = 40.0, Country = "Country2", City = "City2" }
+            };
+
+            mockFileReader.Setup(f => f.WriteAllTextAsync(It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(Task.CompletedTask);
+
+            var serverService = new ServerService(mockFileReader.Object);
+
+            await serverService.UpdateServerAsync(servers);
+
+            mockFileReader.Verify(f => f.WriteAllTextAsync(FilePath, It.Is<string>(s => s.Contains("server1") && s.Contains("server2"))), Times.Once);
+        }
+
+        [TestMethod]
+        public async Task DeleteServerAsync_RemovesServer_WhenCityHasOneServer()
+        {
+            var mockFileReader = new Mock<IFileReader>();
+
+            var mockServers = new List<Server>
+            {
+                new () { Host = "host1", City = "City1" },
+                new () { Host = "host2", City = "City1" },
+                new () { Host = "host3", City = "City2" }
+            };
+
+            mockFileReader.Setup(service => service.ExistsAsync(It.IsAny<string>()))
+                .ReturnsAsync(true);
+
+            mockFileReader.Setup(service => service.ReadAllTextAsync(It.IsAny<string>()))
+                .ReturnsAsync(JsonConvert.SerializeObject(mockServers));
+
+            var serverService = new ServerService(mockFileReader.Object);
+
+            await serverService.DeleteServerAsync("City2");
+
+            var updatedServers = mockServers.Where(s => s.City != "City2").ToList();
+
+            Assert.AreEqual(2, updatedServers.Count);
+            Assert.IsFalse(updatedServers.Any(s => s.City == "City2"));
+
+            mockFileReader.Verify(f => f.WriteAllTextAsync(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+        }
+
+        [TestMethod]
+        public async Task DeleteServerAsync_RemovesSpecificServer_WhenCityHasMultipleServers()
+        {
+            var mockFileReader = new Mock<IFileReader>();
+
+            var mockServers = new List<Server>
+            {
+                new () { Host = "host1", City = "City1" },
+                new () { Host = "host2", City = "City1" },
+                new () { Host = "host3", City = "City2" }
+            };
+
+            mockFileReader.Setup(service => service.ExistsAsync(It.IsAny<string>()))
+                .ReturnsAsync(true);
+
+            mockFileReader.Setup(service => service.ReadAllTextAsync(It.IsAny<string>()))
+                .ReturnsAsync(JsonConvert.SerializeObject(mockServers));
+
+            var serverService = new ServerService(mockFileReader.Object);
+
+            await serverService.DeleteServerAsync("City1", "host1");
+
+            var updatedServers = mockServers.Where(s => s is not { City: "City1", Host: "host1" }).ToList();
+
+            Assert.AreEqual(2, updatedServers.Count);
+            Assert.IsFalse(updatedServers.Any(s => s.Host == "host1"));
+
+            mockFileReader.Verify(f => f.WriteAllTextAsync(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
         }
     }
 }

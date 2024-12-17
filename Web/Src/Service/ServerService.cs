@@ -6,7 +6,7 @@ namespace Web.Src.Service
 {
     public class ServerService(IFileReader fileReader) : IServerService
     {
-        private const string File = "server.json";
+        private const string File = "D://C#//SpeedTest//Web//server.json";
 
         public async Task<List<Server>> GetServersAsync()
         {
@@ -59,16 +59,17 @@ namespace Web.Src.Service
         public async Task UpdateServerAsync(List<Server> servers)
         {
             var jsonData = JsonConvert.SerializeObject(servers, Formatting.Indented);
-            await System.IO.File.WriteAllTextAsync(File, jsonData);
+            await fileReader.WriteAllTextAsync(File, jsonData);
         }
 
         public async Task DeleteServerAsync(string city, string? host = null)
         {
             var servers = await GetServersAsync();
-            var cityServer = servers.Where(s => 
+
+            var cityServer = servers.Where(s =>
                 s.City.Equals(city, StringComparison.OrdinalIgnoreCase)).ToList();
 
-            if (cityServer == null)
+            if (cityServer.Count == 0)
             {
                 throw new InvalidOperationException($"No server for city: {city}");
             }
@@ -79,26 +80,28 @@ namespace Web.Src.Service
             {
                 if (string.IsNullOrEmpty(host))
                 {
-                    throw new ArgumentException($"Multiple servers found for city: " +
-                                                $"{city}. Please specify the host.");
+                    throw new ArgumentException($"Multiple servers found for city: {city}. Please specify the host.");
                 }
-                serverToRemove = cityServer.FirstOrDefault(s => 
+
+                serverToRemove = cityServer.FirstOrDefault(s =>
                     s.Host.Equals(host, StringComparison.OrdinalIgnoreCase));
+
                 if (serverToRemove == null)
                 {
-                    throw new InvalidOperationException($"Server with host: " +
-                                                        $"{host} not found in city: {city}");
+                    throw new InvalidOperationException($"Server with host: {host} not found in city: {city}");
                 }
             }
             else
             {
                 serverToRemove = cityServer.First();
             }
-            servers.Remove(serverToRemove);
 
+            servers.Remove(serverToRemove);
             var jsonData = JsonConvert.SerializeObject(servers, Formatting.Indented);
-            await System.IO.File.WriteAllTextAsync(File, jsonData);
+
+            await fileReader.WriteAllTextAsync(File, jsonData);
         }
+
 
         public async Task DeleteAllServerAsync (string country)
         {
@@ -112,7 +115,7 @@ namespace Web.Src.Service
             }
 
             var jsonData = JsonConvert.SerializeObject(updatedServer, Formatting.Indented);
-            await System.IO.File.WriteAllTextAsync(File, jsonData);
+            await fileReader.WriteAllTextAsync(File, jsonData);
         }
     }
 }

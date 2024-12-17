@@ -37,7 +37,7 @@ namespace WebTest.Src.ServiceTest
         {
             const string host = "8.8.8.8";
 
-            var result = await _pingService.CheckPingAsync(host);
+            var result = await _pingService!.CheckPingAsync(host);
 
             Assert.IsTrue(result is double.MaxValue or >= 0,
                 "In case of timeout, the result should be MaxValue");
