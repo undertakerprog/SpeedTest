@@ -188,24 +188,16 @@ namespace WebTest.Src.ServiceTest
         [TestMethod]
         public async Task GetServersByCityAsync_CityIsNullOrWhitespace_ReturnsAllServers()
         {
-            var mockLocationService = new Mock<LocationService>(Mock.Of<HttpClient>());
-            mockLocationService.Setup(x => x.LoadServersAsync()).ReturnsAsync([
-                new Server
-                {
-                    Country = "USA", City = "New York", Host = "host1", Provider = "provider1", Latitude = 40.7128,
-                    Longitude = -74.0060
-                },
-                new Server
-                {
-                    Country = "Canada", City = "Toronto", Host = "host2", Provider = "provider2", Latitude = 43.65107,
-                    Longitude = -79.347015
-                },
-                new Server
-                {
-                    Country = "Germany", City = "Berlin", Host = "host3", Provider = "provider3", Latitude = 52.5200,
-                    Longitude = 13.4050
-                }
-            ]);
+            var servers = new List<Server>
+            {
+                new() { Country = "USA", City = "New York", Host = "host1", 
+                    Provider = "provider1", Latitude = 40.7128, Longitude = -74.0060 },
+                new() { Country = "Canada", City = "Toronto", Host = "host2",
+                    Provider = "provider2", Latitude = 43.65107, Longitude = -79.347015 },
+                new() { Country = "Germany", City = "Berlin", Host = "host3", 
+                    Provider = "provider3", Latitude = 52.5200, Longitude = 13.4050 }
+            };
+            var mockLocationService = CreateMockLocationService(servers);
 
             var result = await mockLocationService.Object.GetServersByCityAsync(string.Empty);
 
@@ -216,26 +208,13 @@ namespace WebTest.Src.ServiceTest
         [TestMethod]
         public async Task GetServersByCityAsync_CityIsSpecified_ReturnsFilteredServers()
         {
-            var mockLocationService = new Mock<LocationService>(Mock.Of<HttpClient>());
-            mockLocationService
-                .Setup(x => x.LoadServersAsync())
-                .ReturnsAsync([
-                    new Server
-                    {
-                        Country = "USA", City = "New York", Host = "host1", Provider = "provider1", Latitude = 40.7128,
-                        Longitude = -74.0060
-                    },
-                    new Server
-                    {
-                        Country = "Canada", City = "Toronto", Host = "host2", Provider = "provider2",
-                        Latitude = 43.65107, Longitude = -79.347015
-                    },
-                    new Server
-                    {
-                        Country = "Germany", City = "Berlin", Host = "host3", Provider = "provider3",
-                        Latitude = 52.5200, Longitude = 13.4050
-                    }
-                ]);
+            var servers = new List<Server>
+            {
+                new() { Country = "USA", City = "New York", Host = "host1", Provider = "provider1", Latitude = 40.7128, Longitude = -74.0060 },
+                new() { Country = "Canada", City = "Toronto", Host = "host2", Provider = "provider2", Latitude = 43.65107, Longitude = -79.347015 },
+                new() { Country = "Germany", City = "Berlin", Host = "host3", Provider = "provider3", Latitude = 52.5200, Longitude = 13.4050 }
+            };
+            var mockLocationService = CreateMockLocationService(servers);
 
             var result = await mockLocationService.Object.GetServersByCityAsync("New York");
 
@@ -248,10 +227,7 @@ namespace WebTest.Src.ServiceTest
         [TestMethod]
         public async Task GetServersByCityAsync_NoServersInFile_ReturnsEmptyList()
         {
-            var mockLocationService = new Mock<LocationService>(Mock.Of<HttpClient>());
-            mockLocationService
-                .Setup(x => x.LoadServersAsync())
-                .ReturnsAsync([]);
+            var mockLocationService = CreateMockLocationService([]);
 
             var result = await mockLocationService.Object.GetServersByCityAsync(string.Empty);
 
@@ -270,6 +246,14 @@ namespace WebTest.Src.ServiceTest
                 .ThrowsAsync(new Exception("No server available in the list"));
 
             await mockLocationService.Object.GetServersByCityAsync(string.Empty);
+        }
+
+        private static Mock<LocationService> CreateMockLocationService(List<Server> servers)
+        {
+            var mockLocationService = new Mock<LocationService>(Mock.Of<HttpClient>());
+            mockLocationService.Setup(x => x.LoadServersAsync()) 
+                .ReturnsAsync(servers);
+            return mockLocationService;
         }
 
         private static HttpClient CreateMockHttpClient(string responseContent,
