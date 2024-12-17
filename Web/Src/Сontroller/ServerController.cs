@@ -76,31 +76,32 @@ namespace Web.Src.Сontroller
             }
         }
 
-            [HttpDelete("delete-server")]
-            public async Task<IActionResult> DeleteServer([FromQuery] string city, [FromQuery] string? host = null)
+        [HttpDelete("delete-server")]
+        public async Task<IActionResult> DeleteServer([FromQuery] string city, [FromQuery] string? host = null)
+        {
+            if (string.IsNullOrEmpty(city))
             {
-                if (string.IsNullOrEmpty(city))
-                {
-                    return BadRequest("OldHost can't be null or empty");
-                }
-                try
-                {
-                    await serverService.DeleteServerAsync(city, host);
-                    return Ok($"Server successfully deleted for city: {city} with host {host}");
-                }
-                catch (ArgumentException ex)
-                {
-                    return BadRequest(ex.Message);
-                }
-                catch (InvalidOperationException ex)
-                {
-                    return NotFound(ex.Message);
-                }
-                catch (Exception ex)
-                {
-                    return StatusCode(500, $"Server error: {ex.Message}");
-                }
+                return BadRequest("OldHost can't be null or empty");
             }
+
+            try
+            {
+                await serverService.DeleteServerAsync(city, host);
+                return Ok($"Server successfully deleted for city: {city} with host {host}");
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Server error: {ex.Message}");
+            }
+        }
 
         [HttpDelete("delete-all")]
         public async Task<IActionResult> DeleteAllServer([FromBody] string country)
