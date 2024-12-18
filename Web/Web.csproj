@@ -21,7 +21,6 @@
 
   <ItemGroup>
     <Folder Include="Src\Model\SpeedTest\" />
-    <Folder Include="Src\Cache\" />
   </ItemGroup>
 
 </Project>
