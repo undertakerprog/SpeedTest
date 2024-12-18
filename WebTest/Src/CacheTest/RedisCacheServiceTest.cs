@@ -39,7 +39,7 @@ namespace WebTest.Src.Cache
         public async Task GetCachedValueAsync_CacheMiss_ReturnsNull()
         {
             const string key = "myKey";
-            _mockDatabase!.Setup(db => db.StringGetAsync(key, It.IsAny<CommandFlags>())).ReturnsAsync((string)null);
+            _mockDatabase!.Setup(db => db.StringGetAsync(key, It.IsAny<CommandFlags>())).ReturnsAsync((string)null!);
 
             var result = await _redisCacheService!.GetCachedValueAsync(key);
 
