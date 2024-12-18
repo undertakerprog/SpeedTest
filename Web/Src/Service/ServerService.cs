@@ -6,7 +6,7 @@ namespace Web.Src.Service
 {
     public class ServerService(IFileReader fileReader) : IServerService
     {
-        private const string File = "D://C#//SpeedTest//Web//server.json";
+        private const string File = "..//Web//server.json";
 
         public async Task<List<Server>> GetServersAsync()
         {

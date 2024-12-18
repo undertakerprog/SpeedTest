@@ -9,7 +9,7 @@ namespace WebTest.Src.ServiceTest
     [TestClass]
     public class ServerServiceTest
     {
-        private const string FilePath = "D://C#//SpeedTest//Web//server.json";
+        private const string FilePath = "..//Web//server.json";
 
         [TestMethod]
         public async Task GetServersAsync_ShouldThrowFileNotFoundException_WhenFileDoesNotExist()
