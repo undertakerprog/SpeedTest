@@ -317,7 +317,7 @@ namespace WebTest.Src.ControllerTest
             const string city = "New York";
 
             _mockRedisCacheService!.Setup(service => service.GetCachedValueAsync(It.IsAny<string>()))
-                .ReturnsAsync((string)null);
+                .ReturnsAsync((string)null!);
 
             _mockLocationService!.Setup(service => service.GetServersByCityAsync(city))
                 .ThrowsAsync(new Exception("Test exception"));

@@ -2,9 +2,9 @@ namespace Web.Src.Model.Location;
 
 public class UserLocationResponse
 {
-    public double Latitude { get; set; }
-    public double Longitude { get; set; }
-    public string? Country { get; set; }
-    public string? City { get; set; }
-    public string? Query { get; set; }
+    public double Latitude { get; init; }
+    public double Longitude { get; init; }
+    public string? Country { get; init; }
+    public string? City { get; init; }
+    public string? Query { get; init; }
 }
