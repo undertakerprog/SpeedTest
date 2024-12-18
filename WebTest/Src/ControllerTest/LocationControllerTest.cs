@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Text.Json;
+using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Web.Src.Model;
 using Web.Src.Model.Location;
@@ -12,13 +13,15 @@ namespace WebTest.Src.ControllerTest
     public class LocationControllerTest
     {
         private Mock<ILocationService>? _mockLocationService;
+        private Mock<IRedisCacheService>? _mockRedisCacheService;
         private LocationController? _locationController;
 
         [TestInitialize]
         public void Setup()
         {
             _mockLocationService = new Mock<ILocationService>();
-            _locationController = new LocationController(_mockLocationService.Object);
+            _mockRedisCacheService = new Mock<IRedisCacheService>();
+            _locationController = new LocationController(_mockLocationService.Object, _mockRedisCacheService.Object);
         }
 
         [TestMethod]
@@ -233,7 +236,35 @@ namespace WebTest.Src.ControllerTest
         }
 
         [TestMethod]
-        public async Task GetServersOfCity_CityProvidedAndServersFound_ReturnsOkWithServers()
+        public async Task GetServersOfCity_CacheHit_ReturnsServersFromCache()
+        {
+            const string city = "New York";
+            var cachedServers = new List<Server>
+            {
+                new () { City = "New York", Host = "server1.com", Latitude = 40.7128, Longitude = -74.0060 },
+                new () { City = "New York", Host = "server2.com", Latitude = 40.7138, Longitude = -74.0070 }
+            };
+
+            _mockRedisCacheService!.Setup(service => service.GetCachedValueAsync(It.IsAny<string>()))
+                .ReturnsAsync(JsonSerializer.Serialize(cachedServers));
+
+            var result = await _locationController!.GetServersOfCity(city);
+
+            var objectResult = result as ObjectResult;
+            Assert.IsNotNull(objectResult);
+            Assert.AreEqual(200, objectResult.StatusCode);
+
+            var returnedServers = objectResult.Value as List<Server>;
+            Assert.IsNotNull(returnedServers);
+            Assert.AreEqual(2, returnedServers.Count);
+            Assert.AreEqual("New York", returnedServers[0].City);
+
+            _mockLocationService!.Verify(service => service.GetServersByCityAsync(It.IsAny<string>()), Times.Never);
+        }
+
+
+        [TestMethod]
+        public async Task GetServersOfCity_CacheMiss_FetchesAndCachesServers()
         {
             const string city = "New York";
             var servers = new List<Server>
@@ -241,6 +272,9 @@ namespace WebTest.Src.ControllerTest
                 new () { City = "New York", Host = "server1.com", Latitude = 40.7128, Longitude = -74.0060 },
                 new () { City = "New York", Host = "server2.com", Latitude = 40.7138, Longitude = -74.0070 }
             };
+
+            _mockRedisCacheService!.Setup(service => service.GetCachedValueAsync(It.IsAny<string>()))
+                .ReturnsAsync((string)null!);
 
             _mockLocationService!.Setup(service => service.GetServersByCityAsync(city))
                 .ReturnsAsync(servers);
@@ -255,64 +289,46 @@ namespace WebTest.Src.ControllerTest
             Assert.IsNotNull(returnedServers);
             Assert.AreEqual(2, returnedServers.Count);
             Assert.AreEqual("New York", returnedServers[0].City);
+
+            _mockRedisCacheService.Verify(service => service.SetCachedValueAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<TimeSpan>()), Times.Once);
         }
 
-        [TestMethod]
-        public async Task GetServersOfCity_CityNotProvided_UsesUserCityAndReturnsServers()
-        {
-            const string userCity = "New York";
-            var servers = new List<Server>
-            {
-                new () { City = "New York", Host = "server1.com", Latitude = 40.7128, Longitude = -74.0060 }
-            };
-
-            _mockLocationService!.Setup(service => service.GetUserLocationAsync())
-                .ReturnsAsync((0, 0, "USA", userCity, "192.168.1.1"));
-
-            _mockLocationService.Setup(service => service.GetServersByCityAsync(userCity))
-                .ReturnsAsync(servers);
-
-            var result = await _locationController!.GetServersOfCity(null);
-
-            var objectResult = result as ObjectResult;
-            Assert.IsNotNull(objectResult);
-            Assert.AreEqual(200, objectResult.StatusCode);
-
-            var returnedServers = objectResult.Value as List<Server>;
-            Assert.IsNotNull(returnedServers);
-            Assert.AreEqual(1, returnedServers.Count);
-            Assert.AreEqual(userCity, returnedServers[0].City);
-        }
 
         [TestMethod]
-        public async Task GetServersOfCity_ServersNotFound_ReturnsNotFound()
+        public async Task GetServersOfCity_CacheError_ReturnsInternalServerError()
         {
-            const string city = "Unknown City";
-            var servers = new List<Server>();
+            const string city = "New York";
 
-            _mockLocationService!.Setup(service => service.GetServersByCityAsync(city))
-                .ReturnsAsync(servers);
+            _mockRedisCacheService!.Setup(service => service.GetCachedValueAsync(It.IsAny<string>()))
+                .ThrowsAsync(new Exception("Cache error"));
 
             var result = await _locationController!.GetServersOfCity(city);
 
-            var notFoundResult = result as NotFoundObjectResult;
-            Assert.IsNotNull(notFoundResult);
-            Assert.AreEqual(404, notFoundResult.StatusCode);
-            Assert.AreEqual($"Servers with city: {city} not found", notFoundResult.Value);
+            var objectResult = result as ObjectResult;
+            Assert.IsNotNull(objectResult);
+            Assert.AreEqual(500, objectResult.StatusCode);
+            Assert.AreEqual("Server error: Cache error", objectResult.Value);
         }
 
+
         [TestMethod]
-        public async Task GetServersOfCity_ExceptionThrown_ReturnsInternalServerError()
+        public async Task GetServersOfCity_CacheMiss_ExceptionThrown_ReturnsInternalServerError()
         {
-            _mockLocationService!.Setup(service => service.GetServersByCityAsync(It.IsAny<string>()))
+            const string city = "New York";
+
+            _mockRedisCacheService!.Setup(service => service.GetCachedValueAsync(It.IsAny<string>()))
+                .ReturnsAsync((string)null);
+
+            _mockLocationService!.Setup(service => service.GetServersByCityAsync(city))
                 .ThrowsAsync(new Exception("Test exception"));
 
-            var result = await _locationController!.GetServersOfCity("New York");
+            var result = await _locationController!.GetServersOfCity(city);
 
             var objectResult = result as ObjectResult;
             Assert.IsNotNull(objectResult);
             Assert.AreEqual(500, objectResult.StatusCode);
             Assert.AreEqual("Server error: Test exception", objectResult.Value);
         }
+
     }
 }

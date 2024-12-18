@@ -1,12 +1,14 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Web.Src.Model;
 using Web.Src.Model.Location;
 using Web.Src.Service;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace Web.Src.Сontroller
 {
     [ApiController]
     [Route("api/location")]
-    public class LocationController(ILocationService locationService) : Controller
+    public class LocationController(ILocationService locationService, IRedisCacheService cacheService) : Controller
     {
         [HttpGet("my-location")]
         public async Task<IActionResult> GetUserLocation()
@@ -110,6 +112,15 @@ namespace Web.Src.Сontroller
                     city = userCity;
                 }
 
+                var cacheKey = $"server-city:{city.ToLower()}";
+
+                var cacheData = await cacheService.GetCachedValueAsync(cacheKey);
+                if (!string.IsNullOrEmpty(cacheData))
+                {
+                    var cachedServers = JsonSerializer.Deserialize<List<Server>>(cacheData);
+                    return Ok(cachedServers);
+                }
+
                 var servers = await locationService.GetServersByCityAsync(city);
 
                 if (!servers.Any())
@@ -117,12 +128,15 @@ namespace Web.Src.Сontroller
                     return NotFound($"Servers with city: {city} not found");
                 }
 
+                await cacheService.SetCachedValueAsync(cacheKey, JsonSerializer.Serialize(servers),
+                    TimeSpan.FromMinutes(30));
+
                 return Ok(servers);
             }
             catch(Exception ex)
             {
                 return StatusCode(500, $"Server error: {ex.Message}");
             }
-        } 
+        }
     }
 }

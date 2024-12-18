@@ -1,6 +1,7 @@
 using Microsoft.OpenApi.Models;
 using Infrastructure;
 using Web.Src.Service;
+using StackExchange.Redis;
 
 namespace Web
 {
@@ -9,6 +10,14 @@ namespace Web
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
+            {
+                var configuration = builder.Configuration.GetConnectionString("Redis");
+                return ConnectionMultiplexer.Connect(configuration!);
+            });
+
+            builder.Services.AddSingleton<IRedisCacheService, RedisCacheService>();
 
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(options =>
@@ -27,7 +36,6 @@ namespace Web
             builder.Services.AddScoped<ILocationService, LocationService>();
             builder.Services.AddScoped<ISpeedTestService, SpeedTestService>();
             builder.Services.AddControllers();
-
             builder.Services.AddSingleton<IFileReader, FileReader>();
 
             var app = builder.Build();

@@ -35,7 +35,7 @@ namespace WebTest.Src.ServiceTest
         {
             var duration = TimeSpan.FromSeconds(5);
 
-            var result = await _speedTestService.FastDownloadSpeedAsync(duration);
+            var result = await _speedTestService!.FastDownloadSpeedAsync(duration);
 
             Assert.IsTrue(result > 0, "Download speed should be greater than zero.");
         }
