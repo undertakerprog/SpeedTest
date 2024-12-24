@@ -1,12 +1,13 @@
-﻿using System.Diagnostics;
+﻿using Microsoft.Extensions.Configuration;
+using System.Diagnostics;
+using System.Net.Http;
 using Web.Src.Model;
 
 namespace Web.Src.Service
 {
     public class SpeedTestService(
         IConfiguration configuration,
-        ILocationService locationService,
-        HttpClient httpClient)
+        ILocationService locationService)
         : ISpeedTestService
     {
         private static readonly int[] DownloadSizes = [350, 750, 1500, 3000];
@@ -57,16 +58,10 @@ namespace Web.Src.Service
 
                 var downloadUrls = GenerateDownloadUrls(server, 3);
 
-                const int testCount = 3;
-                var speeds = new List<double>();
 
-                for (var i = 0; i < testCount; i++)
-                {
-                    var speed = await MeasureDownloadSpeedAsync(downloadUrls);
-                    speeds.Add(speed);
-                }
+                var speed = await MeasureDownloadSpeedAsync(downloadUrls);
 
-                var speedAverage = speeds.Count > 0 ? speeds.Average() : 0;
+                var speedAverage = speed > 0 ? speed : 0;
 
                 return new DownloadSpeed
                 {
@@ -98,7 +93,7 @@ namespace Web.Src.Service
             }
         }
 
-        private async Task<double> MeasureDownloadSpeedAsync(IEnumerable<string> downloadUrls)
+        private static async Task<double> MeasureDownloadSpeedAsync(IEnumerable<string> downloadUrls)
         {
             double totalSpeed = 0;
             var count = 0;
@@ -120,36 +115,44 @@ namespace Web.Src.Service
             return count > 0 ? Math.Round(totalSpeed / count, 3) : 0;
         }
 
-        private async Task<double> MeasureDownloadSpeedFromUrlAsync(string url, TimeSpan timeout)
+        private static async Task<double> MeasureDownloadSpeedFromUrlAsync(string url, TimeSpan timeout)
         {
-            httpClient.Timeout = timeout;
+            var httpClient = new HttpClient();
+            httpClient.Timeout = TimeSpan.FromMilliseconds(Timeout.Infinite);
 
             var stopwatch = Stopwatch.StartNew();
+            var totalBytesRead = 0L;
 
-            var request = new HttpRequestMessage(HttpMethod.Get, url);
-            request.Headers.Add("User-Agent",
-                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 " +
-                "(KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36");
-
-            var response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseContentRead);
-
-            if (!response.IsSuccessStatusCode)
+            try
             {
-                throw new Exception($"Failed to download file. HTTP Status: {response.StatusCode}");
+                using var cts = new CancellationTokenSource(timeout);
+                var request = new HttpRequestMessage(HttpMethod.Get, url);
+                request.Headers.Add("User-Agent",
+                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 " +
+                    "(KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36");
+
+                var response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cts.Token);
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new Exception($"Failed to download file. HTTP Status: {response.StatusCode}");
+                }
+
+                await using var contentStream = await response.Content.ReadAsStreamAsync(cts.Token);
+                var buffer = new byte[Buffer];
+                int bytesRead;
+
+                while ((bytesRead = await contentStream.ReadAsync(buffer, 0, buffer.Length, cts.Token)) > 0)
+                {
+                    totalBytesRead += bytesRead;
+                }
+            }
+            catch (OperationCanceledException) {}
+            finally
+            {
+                stopwatch.Stop();
             }
 
-            var contentStream = await response.Content.ReadAsStreamAsync();
-            var buffer = new byte[Buffer];
-            long totalBytesRead = 0;
-            int bytesRead;
-
-            while ((bytesRead = await contentStream.ReadAsync(buffer, 0, buffer.Length)) > 0)
-            {
-                totalBytesRead += bytesRead;
-            }
-
-            stopwatch.Stop();
-            var timeInSeconds = stopwatch.Elapsed.TotalSeconds;
+            var timeInSeconds = stopwatch.Elapsed.TotalSeconds > 0 ? stopwatch.Elapsed.TotalSeconds : timeout.TotalSeconds;
             var speedInMbps = ((totalBytesRead / MegabyteSize / MegabyteSize) / timeInSeconds) * 8;
             return Math.Round(speedInMbps, 3);
         }
