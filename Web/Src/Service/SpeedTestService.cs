@@ -1,6 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Net.NetworkInformation;
-using System.Text;
 using Web.Src.Model;
 
 namespace Web.Src.Service

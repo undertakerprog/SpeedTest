@@ -2,14 +2,14 @@
 
 namespace Web.Src.Service
 {
-    public class PingService : IPingService
+    public sealed class PingService : IPingService
     {
-        public virtual async Task<double> CheckPingAsync(string host)
+        public async Task<double> CheckPingAsync(string host)
         {
             using var ping = new Ping();
             var options = new PingOptions
             {
-                Ttl = 128,   //Lifetime TTL packege
+                Ttl = 128,              //Lifetime TTL packege
                 DontFragment = true,
             };
             var buffer = new byte[32];  //Packege size
