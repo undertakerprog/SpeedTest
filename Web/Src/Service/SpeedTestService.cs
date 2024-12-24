@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
-using System.Diagnostics;
-using System.Net.Http;
+﻿using System.Diagnostics;
 using Web.Src.Model;
 
 namespace Web.Src.Service
