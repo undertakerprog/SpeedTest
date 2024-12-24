@@ -65,8 +65,6 @@ namespace WebTest.Src.ServiceTest
             _mockLocationService!.Setup(l => l.GetBestServerAsync())
                 .ReturnsAsync(server);
 
-            var downloadUrls = new List<string> { "http://example.com/random1x1.jpg", "http://example.com/random2x2.jpg" };
-
             var result = await _speedTestService!.GetDownloadSpeed();
 
             Assert.IsNotNull(result);
