@@ -5,7 +5,8 @@ namespace Web.Src.Service
 {
     public class SpeedTestService(
         IConfiguration configuration,
-        ILocationService locationService)
+        ILocationService locationService,
+        Func<HttpClient> httpClientFactory)
         : ISpeedTestService
     {
         private static readonly int[] DownloadSizes = [350, 750, 1500, 3000];
@@ -91,7 +92,7 @@ namespace Web.Src.Service
             }
         }
 
-        private static async Task<double> MeasureDownloadSpeedAsync(IEnumerable<string> downloadUrls)
+        private async Task<double> MeasureDownloadSpeedAsync(IEnumerable<string> downloadUrls)
         {
             double totalSpeed = 0;
             var count = 0;
@@ -113,9 +114,9 @@ namespace Web.Src.Service
             return count > 0 ? Math.Round(totalSpeed / count, 3) : 0;
         }
 
-        private static async Task<double> MeasureDownloadSpeedFromUrlAsync(string url, TimeSpan timeout)
+        private async Task<double> MeasureDownloadSpeedFromUrlAsync(string url, TimeSpan timeout)
         {
-            var httpClient = new HttpClient();
+            using var httpClient = httpClientFactory();
             httpClient.Timeout = TimeSpan.FromMilliseconds(Timeout.Infinite);
 
             var stopwatch = Stopwatch.StartNew();

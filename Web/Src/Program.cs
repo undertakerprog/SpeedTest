@@ -30,6 +30,12 @@ namespace Web
                 });
             });
 
+            builder.Services.AddScoped<Func<HttpClient>>(serviceProvider =>
+            {
+                var httpClientFactory = serviceProvider.GetRequiredService<IHttpClientFactory>();
+                return () => httpClientFactory.CreateClient();
+            });
+
             builder.Services.AddHttpClient();
             builder.Services.AddScoped<IServerService, ServerService>();
             builder.Services.AddScoped<IPingService, PingService>();

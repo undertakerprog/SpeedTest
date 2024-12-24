@@ -12,7 +12,7 @@ namespace WebTest.Src.ServiceTest
     {
         private Mock<IConfiguration>? _mockConfiguration;
         private Mock<ILocationService>? _mockLocationService;
-        private HttpClient? _mockHttpClient;
+        private Mock<Func<HttpClient>>? _mockHttpClientFactory;
         private SpeedTestService? _speedTestService;
 
         [TestInitialize]
@@ -20,14 +20,20 @@ namespace WebTest.Src.ServiceTest
         {
             _mockConfiguration = new Mock<IConfiguration>();
             _mockLocationService = new Mock<ILocationService>();
+            _mockHttpClientFactory = new Mock<Func<HttpClient>>();
 
             _mockConfiguration.Setup(c => c["SpeedTest:DownloadUrl"])
                 .Returns("http://example.com/testfile");
 
-            _mockHttpClient = CreateMockHttpClient(new string('0', 1024 * 1024));
-            _speedTestService = new SpeedTestService(_mockConfiguration.Object,
+            var mockHttpClient = CreateMockHttpClient(new string('0', 1024 * 1024));
+            _mockHttpClientFactory.Setup(factory => factory.Invoke())
+                .Returns(mockHttpClient);
+
+            _speedTestService = new SpeedTestService(
+                _mockConfiguration.Object,
                 _mockLocationService.Object,
-                _mockHttpClient);
+                _mockHttpClientFactory.Object
+            );
         }
 
         [TestMethod]
@@ -48,6 +54,7 @@ namespace WebTest.Src.ServiceTest
             var exception = await Assert.ThrowsExceptionAsync<InvalidOperationException>(
                 async () => await _speedTestService!.FastDownloadSpeedAsync(TimeSpan.FromSeconds(5))
             );
+
             Assert.AreEqual("Download URL isn't configured", exception.Message);
         }
 
@@ -59,17 +66,14 @@ namespace WebTest.Src.ServiceTest
                 .ReturnsAsync(server);
 
             var downloadUrls = new List<string> { "http://example.com/random1x1.jpg", "http://example.com/random2x2.jpg" };
-            _speedTestService = new SpeedTestService(_mockConfiguration!.Object,
-                _mockLocationService.Object,
-                _mockHttpClient!);
 
-            var result = await _speedTestService.GetDownloadSpeed();
+            var result = await _speedTestService!.GetDownloadSpeed();
 
             Assert.IsNotNull(result);
             Assert.IsTrue(result.Speed > 0, "Download speed should be greater than zero.");
         }
 
-        private static HttpClient CreateMockHttpClient(string responseContent,
+        private static HttpClient CreateMockHttpClient(string responseContent, 
             HttpStatusCode statusCode = HttpStatusCode.OK)
         {
             var messageHandler = new FakeHttpMessageHandler(responseContent, statusCode);
