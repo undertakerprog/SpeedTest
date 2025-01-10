@@ -15,5 +15,16 @@ namespace Web.Src.Service
         {
             await _database.StringSetAsync(key, value, expiry);
         }
+
+        public async Task<Dictionary<string, string>> GetRedisInfoAsync(string section)
+        {
+            var info = await _database.ExecuteAsync("INFO", section);
+            return info.ToString()
+                .Split('\n', StringSplitOptions.RemoveEmptyEntries)
+                .Select(line => line.Split(':', 2))
+                .Where(parts => parts.Length == 2)
+                .ToDictionary(parts => parts[0].Trim(), parts => parts[1].Trim());
+        }
+
     }
 }

@@ -4,5 +4,7 @@ namespace Web.Src.Service
     {
         Task<string?> GetCachedValueAsync(string key);
         Task SetCachedValueAsync(string key, string value, TimeSpan? expiry = null);
+
+        Task<Dictionary<string, string>> GetRedisInfoAsync(string section);
     }
 }

@@ -131,6 +131,10 @@ namespace Web.Src.Сontroller
                 await cacheService.SetCachedValueAsync(cacheKey, JsonSerializer.Serialize(servers),
                     TimeSpan.FromMinutes(30));
 
+                var memoryInfo = await cacheService.GetRedisInfoAsync("memory");
+                Console.WriteLine($"Redis memory usage: {memoryInfo["used_memory_human"]}");
+                Console.WriteLine($"City '{city}' has been cached with key: '{cacheKey}'");
+
                 return Ok(servers);
             }
             catch(Exception ex)
