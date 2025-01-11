@@ -1,0 +1,27 @@
+﻿<Window x:Class="Desktop.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="MainWindow" Height="450" Width="800"
+        WindowStartupLocation="CenterScreen">
+    <Grid>
+        <DockPanel Background="#333 " Height="50" VerticalAlignment="Top">
+            <Button Width="40" Height="40" 
+                    HorizontalAlignment="Left"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Margin ="5"
+                    Click="SettingsButton_Click">
+                <Image x:Name="CurrentImage" 
+                    Source="/Resources/settings-50.png" Stretch="Uniform"></Image>
+            </Button>
+            <TextBlock x:Name="CurrentPageTitle"
+                       Text="SpeedTest"
+                       Foreground="White"
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Center"
+                       FontSize="16"
+            ></TextBlock>
+        </DockPanel>
+        <Frame x:Name="MainFrame" NavigationUIVisibility="Hidden" Margin="0,50,0,0"></Frame>
+    </Grid>
+</Window>
