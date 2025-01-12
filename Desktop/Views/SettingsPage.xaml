@@ -3,9 +3,17 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       Title="SettingsPage">
     <Grid>
-        <TextBlock Text="This is the Settings Page"
-                   HorizontalAlignment="Center"
-                   VerticalAlignment="Center"
-                   FontSize="24" />
+        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+            <TextBlock Text="Settings Page" FontSize="24" Margin="0,0,0,20"/>
+            <CheckBox x:Name="ShowSpeedInTrayCheckBoxControl"
+                      Content="Display internet speed in system tray"
+                      FontSize="16"
+                      Checked="ShowSpeedInTrayCheckBox_Checked"
+                      Unchecked="ShowSpeedInTrayCheckBox_Unchecked"/>
+            <ContentControl x:Name="AppBarContainer"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Visibility="Collapsed" />
+        </StackPanel>
     </Grid>
 </Page>

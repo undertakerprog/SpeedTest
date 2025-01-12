@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Diagnostics;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 
@@ -7,12 +8,16 @@ namespace Desktop.Views
     public partial class MainWindow
     {
         private readonly Page _mainPage = new MainPage();
-        private readonly Page _settingsPage = new SettingsPage();
+        private readonly SettingsPage _settingsPage = new SettingsPage();
+
+        private AppBarWindow? _appBarWindow;
+
         public MainWindow()
         {
             InitializeComponent();
 
             MainFrame.Navigate(new MainPage());
+            Closing += MainWindow_Closing!;
         }
 
         private void SettingsButton_Click(object sender, RoutedEventArgs e)
@@ -44,6 +49,15 @@ namespace Desktop.Views
 
             var bitmapImage = new BitmapImage(new Uri(imagePath, UriKind.RelativeOrAbsolute));
             CurrentImage.Source = bitmapImage;
+        }
+
+        private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+
+            if (_settingsPage.ShowSpeedInTrayCheckBox.IsChecked == true)
+            {
+                _settingsPage.ShowSpeedInTrayCheckBox.IsChecked = false;
+            }
         }
     }
 }
