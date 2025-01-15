@@ -10,6 +10,9 @@ namespace Desktop.Views
         public SettingsPage()
         {
             InitializeComponent();
+
+            var savedUnit = Properties.Settings.Default.SpeedUnit;
+            SetSpeedUnitRadioButton(savedUnit);
         }
 
         public CheckBox ShowSpeedInTrayCheckBox => ShowSpeedCheckBoxControl;
@@ -24,6 +27,32 @@ namespace Desktop.Views
         {
             _appBarWindow.Close();
             _appBarWindow = null;
+        }
+
+        private void SpeedUnitRadioButton_Checked(object sender, RoutedEventArgs e)
+        {
+            if (sender is not RadioButton radioButton) return;
+            Properties.Settings.Default.SpeedUnit = radioButton.Content.ToString();
+            Properties.Settings.Default.Save();
+        }
+
+        private void SetSpeedUnitRadioButton(string unit)
+        {
+            switch (unit)
+            {
+                case "Kbps":
+                    KbpsRadioButton.IsChecked = true;
+                    break;
+                case "MBps":
+                    MBpsRadioButton.IsChecked = true;
+                    break;
+                case "KBps":
+                    KBpsRadioButton.IsChecked = true;
+                    break;
+                default:
+                    MbpsRadioButton.IsChecked = true;
+                    break;
+            }
         }
     }
 }
