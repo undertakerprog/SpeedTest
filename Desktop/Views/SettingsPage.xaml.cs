@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 
 namespace Desktop.Views
@@ -13,11 +12,11 @@ namespace Desktop.Views
             InitializeComponent();
         }
 
-        public CheckBox ShowSpeedInTrayCheckBox => ShowSpeedInTrayCheckBoxControl;
+        public CheckBox ShowSpeedInTrayCheckBox => ShowSpeedCheckBoxControl;
 
         private void ShowSpeedInTrayCheckBox_Checked(object sender, RoutedEventArgs e)
         {
-            _appBarWindow ??= new AppBarWindow();
+            _appBarWindow = new AppBarWindow();
             _appBarWindow.Show();
         }
 

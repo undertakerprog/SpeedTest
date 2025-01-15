@@ -5,8 +5,8 @@
     <Grid>
         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
             <TextBlock Text="Settings Page" FontSize="24" Margin="0,0,0,20"/>
-            <CheckBox x:Name="ShowSpeedInTrayCheckBoxControl"
-                      Content="Display internet speed in system tray"
+            <CheckBox x:Name="ShowSpeedCheckBoxControl"
+                      Content="Show network speed in a separate window"
                       FontSize="16"
                       Checked="ShowSpeedInTrayCheckBox_Checked"
                       Unchecked="ShowSpeedInTrayCheckBox_Unchecked"/>

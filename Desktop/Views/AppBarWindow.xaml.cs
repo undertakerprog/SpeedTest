@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+﻿using System.Net.NetworkInformation;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
@@ -8,20 +8,22 @@ namespace Desktop.Views
     public partial class AppBarWindow
     {
         private DispatcherTimer _timer;
-        private PerformanceCounter _bytesReceivedCounter;
-        private PerformanceCounter _bytesSentCounter;
+        private long _previousReceivedBytes;
+        private long _previousSentBytes;
 
         public AppBarWindow()
         {
             InitializeComponent();
-            InitializeNetworkSpeedUpdater();
+            SpeedLabel.Content = "Initialization...";
             Loaded += AppBarWindow_Loaded;
+            InitializeNetworkSpeedUpdater();
         }
 
         private void AppBarWindow_Loaded(object sender, RoutedEventArgs e)
         {
             var mainWindow = Application.Current.MainWindow;
-            if (mainWindow == null) return;
+            if (mainWindow == null)
+                return;
             var screenWidth = mainWindow.Width;
             var screenHeight = mainWindow.Height;
             var windowWidth = Width;
@@ -33,24 +35,15 @@ namespace Desktop.Views
 
         private void InitializeNetworkSpeedUpdater()
         {
-            var category = new PerformanceCounterCategory("Network Interface");
-            var instanceNames = category.GetInstanceNames();
-
-            if (instanceNames.Length > 0)
-            {
-                _bytesReceivedCounter = new PerformanceCounter("Network Interface", "Bytes Received/sec", instanceNames[0]);
-                _bytesSentCounter = new PerformanceCounter("Network Interface", "Bytes Sent/sec", instanceNames[0]);
-            }
-            else
-            {
-                throw new InvalidOperationException("No network interfaces found.");
-            }
+            var (receivedBytes, sentBytes) = GetNetworkStatistics();
+            _previousReceivedBytes = receivedBytes;
+            _previousSentBytes = sentBytes;
 
             _timer = new DispatcherTimer
             {
                 Interval = TimeSpan.FromSeconds(1)
             };
-            _timer.Tick += UpdateNetworkSpeed!;
+            _timer.Tick += UpdateNetworkSpeed;
             _timer.Start();
         }
 
@@ -58,17 +51,57 @@ namespace Desktop.Views
         {
             try
             {
-                var bytesReceivedPerSecond = _bytesReceivedCounter.NextValue();
-                var bytesSentPerSecond = _bytesSentCounter.NextValue();
+                var (totalReceivedBytes, totalSentBytes) = GetNetworkStatistics();
 
-                var receivedMbps = bytesReceivedPerSecond * 8 / 1_000_000;
-                var sentMbps = bytesSentPerSecond * 8 / 1_000_000;
+                var receivedBytesDelta = totalReceivedBytes - _previousReceivedBytes;
+                var sentBytesDelta = totalSentBytes - _previousSentBytes;
+
+                _previousReceivedBytes = totalReceivedBytes;
+                _previousSentBytes = totalSentBytes;
+
+                var receivedMbps = receivedBytesDelta * 8 / 1_000_000.0;
+                var sentMbps = sentBytesDelta * 8 / 1_000_000.0;
 
                 SpeedLabel.Content = $"Download: {receivedMbps:F2} Mbps\nUpload: {sentMbps:F2} Mbps";
             }
-            catch
+            catch (Exception ex)
             {
-                SpeedLabel.Content = "Error retrieving network speed";
+                SpeedLabel.Content = $"Error: {ex.Message}";
+            }
+        }
+
+        private (long receivedBytes, long sentBytes) GetNetworkStatistics()
+        {
+            try
+            {
+                var networkInterfaces = NetworkInterface.GetAllNetworkInterfaces()
+                    .Where(nic =>
+                        nic.OperationalStatus == OperationalStatus.Up &&
+                        (nic.NetworkInterfaceType == NetworkInterfaceType.Wireless80211 ||
+                         nic.NetworkInterfaceType == NetworkInterfaceType.Ethernet))
+                    .ToList();
+
+                if (!networkInterfaces.Any())
+                {
+                    SpeedLabel.Content = "No active network interfaces found";
+                    return (0, 0);
+                }
+
+                long totalReceivedBytes = 0;
+                long totalSentBytes = 0;
+
+                foreach (var stats in networkInterfaces.Select(nic => nic.GetIPv4Statistics()))
+                {
+                    totalReceivedBytes += stats.BytesReceived;
+                    totalSentBytes += stats.BytesSent;
+                }
+
+                return (totalReceivedBytes, totalSentBytes);
+            }
+            catch (Exception ex)
+            {
+                SpeedLabel.Content = $"Error: {ex.Message}";
+                return (0, 0);
             }
         }
 
@@ -82,9 +115,7 @@ namespace Desktop.Views
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            _timer.Stop();
-            _bytesReceivedCounter.Dispose();
-            _bytesSentCounter.Dispose();
+            _timer?.Stop();
         }
     }
 }
