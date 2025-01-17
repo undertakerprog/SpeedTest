@@ -262,7 +262,6 @@ namespace WebTest.Src.ControllerTest
             _mockLocationService!.Verify(service => service.GetServersByCityAsync(It.IsAny<string>()), Times.Never);
         }
 
-
         [TestMethod]
         public async Task GetServersOfCity_CacheMiss_FetchesAndCachesServers()
         {
@@ -276,23 +275,30 @@ namespace WebTest.Src.ControllerTest
             _mockRedisCacheService!.Setup(service => service.GetCachedValueAsync(It.IsAny<string>()))
                 .ReturnsAsync((string)null!);
 
+            _mockRedisCacheService!.Setup(service =>
+                    service.SetCachedValueAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<TimeSpan>()))
+                .Returns(Task.CompletedTask);
+
+            _mockRedisCacheService!.Setup(service => service.GetRedisInfoAsync(It.IsAny<string>()))
+                .ReturnsAsync(new Dictionary<string, string> { { "used_memory_human", "1MB" } });
+
             _mockLocationService!.Setup(service => service.GetServersByCityAsync(city))
                 .ReturnsAsync(servers);
 
             var result = await _locationController!.GetServersOfCity(city);
 
             var objectResult = result as ObjectResult;
-            Assert.IsNotNull(objectResult);
+            Assert.IsNotNull(objectResult, "Result is not ObjectResult");
             Assert.AreEqual(200, objectResult.StatusCode);
 
             var returnedServers = objectResult.Value as List<Server>;
-            Assert.IsNotNull(returnedServers);
+            Assert.IsNotNull(returnedServers, "Returned servers are null");
             Assert.AreEqual(2, returnedServers.Count);
             Assert.AreEqual("New York", returnedServers[0].City);
 
-            _mockRedisCacheService.Verify(service => service.SetCachedValueAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<TimeSpan>()), Times.Once);
+            _mockRedisCacheService.Verify(service =>
+                service.SetCachedValueAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<TimeSpan>()), Times.Once);
         }
-
 
         [TestMethod]
         public async Task GetServersOfCity_CacheError_ReturnsInternalServerError()
@@ -309,7 +315,6 @@ namespace WebTest.Src.ControllerTest
             Assert.AreEqual(500, objectResult.StatusCode);
             Assert.AreEqual("Server error: Cache error", objectResult.Value);
         }
-
 
         [TestMethod]
         public async Task GetServersOfCity_CacheMiss_ExceptionThrown_ReturnsInternalServerError()
