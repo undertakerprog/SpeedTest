@@ -15,7 +15,7 @@ namespace Desktop.Views
             SetSpeedUnitRadioButton(savedUnit);
         }
 
-        public CheckBox ShowSpeedInTrayCheckBox => ShowSpeedCheckBoxControl;
+        public CheckBox ShowSpeedCheckBox => ShowSpeedCheckBoxControl;
 
         private void ShowSpeedInTrayCheckBox_Checked(object sender, RoutedEventArgs e)
         {

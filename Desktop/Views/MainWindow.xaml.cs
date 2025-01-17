@@ -6,10 +6,8 @@ namespace Desktop.Views
 {
     public partial class MainWindow
     {
-        private readonly Page _mainPage = new MainPage();
+        private readonly MainPage _mainPage = new MainPage();
         private readonly SettingsPage _settingsPage = new SettingsPage();
-
-        private AppBarWindow? _appBarWindow;
 
         public MainWindow()
         {
@@ -53,9 +51,9 @@ namespace Desktop.Views
         private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
 
-            if (_settingsPage.ShowSpeedInTrayCheckBox.IsChecked == true)
+            if (_settingsPage.ShowSpeedCheckBox.IsChecked == true)
             {
-                _settingsPage.ShowSpeedInTrayCheckBox.IsChecked = false;
+                _settingsPage.ShowSpeedCheckBox.IsChecked = false;
             }
         }
     }

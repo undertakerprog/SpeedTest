@@ -14,5 +14,17 @@
                 _ => bitsDelta / 1000000.0
             };
         }
+
+        public static double ConvertMbpsToOtherUnits(double speedMbps, string unit)
+        {
+            return unit switch
+            {
+                "KBps" => speedMbps * 125,
+                "MBps" => speedMbps / 8,
+                "Kbps" => speedMbps * 1000,
+                "Mbps" => speedMbps,
+                _ => speedMbps
+            };
+        }
     }
 }

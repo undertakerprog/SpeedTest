@@ -3,9 +3,40 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       Title="MainPage">
     <Grid>
-        <TextBlock Text="This is the Main Page"
+        <StackPanel Orientation="Horizontal" 
+                    HorizontalAlignment="Left" 
+                    VerticalAlignment="Top" 
+                    Margin="10">
+            <RadioButton x:Name="FastSpeedTestRadioButton"
+                         Content="Fast Speedtest" 
+                         GroupName="SpeedTestType" 
+                         IsChecked="True" 
+                         Margin="0,0,10,0" />
+            <RadioButton x:Name="SpeedTestRadioButton"
+                         Content="Speedtest" 
+                         GroupName="SpeedTestType" />
+        </StackPanel>
+
+        <Button x:Name="StartButton"
+                Content="Start" 
+                HorizontalAlignment="Center" 
+                VerticalAlignment="Center" 
+                Width="100" 
+                Height="100" 
+                Background="LightBlue" 
+                Foreground="Black" 
+                FontSize="16" 
+                FontWeight="Bold" 
+                BorderBrush="DarkBlue" 
+                BorderThickness="2" 
+                Style="{StaticResource RoundButtonStyle}" 
+                Click="StartButton_Click" />
+
+        <TextBlock x:Name="SpeedResultText"
                    HorizontalAlignment="Center"
                    VerticalAlignment="Center"
-                   FontSize="24" />
+                   FontSize="16"
+                   FontWeight="Bold"
+                   Visibility="Collapsed" />
     </Grid>
 </Page>
