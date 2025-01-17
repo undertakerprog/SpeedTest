@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
+using Desktop.Helpers;
 
 namespace Desktop.Views
 {
@@ -59,10 +60,11 @@ namespace Desktop.Views
                 _previousReceivedBytes = totalReceivedBytes;
                 _previousSentBytes = totalSentBytes;
 
-                var receivedMbps = receivedBytesDelta * 8 / 1_000_000.0;
-                var sentMbps = sentBytesDelta * 8 / 1_000_000.0;
+                var speedUnit = Properties.Settings.Default.SpeedUnit;
+                var receivedSpeed = SpeedConverter.ConvertSpeed(receivedBytesDelta, speedUnit);
+                var sentSpeed = SpeedConverter.ConvertSpeed(sentBytesDelta, speedUnit);
 
-                SpeedLabel.Content = $"Download: {receivedMbps:F2} Mbps\nUpload: {sentMbps:F2} Mbps";
+                SpeedLabel.Content = $"Download: {receivedSpeed:F2} {speedUnit}\nUpload: {sentSpeed:F2} {speedUnit}";
             }
             catch (Exception ex)
             {
