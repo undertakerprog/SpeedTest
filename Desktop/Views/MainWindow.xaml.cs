@@ -1,6 +1,10 @@
-﻿using System.Windows;
+﻿using System.Diagnostics;
+using System.Net.Http;
+using System.Text.Json;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
+using Desktop.Model;
 
 namespace Desktop.Views
 {
@@ -12,7 +16,6 @@ namespace Desktop.Views
         public MainWindow()
         {
             InitializeComponent();
-
             MainFrame.Navigate(new MainPage());
             Closing += MainWindow_Closing!;
         }

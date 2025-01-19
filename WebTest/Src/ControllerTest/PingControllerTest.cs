@@ -24,7 +24,9 @@ namespace WebTest.Src.ControllerTest
         {
             const string host = "example.com";
             const double pingResult = 50.5;
-            _mockPingService!.Setup(s => s.CheckPingAsync(host)).ReturnsAsync(pingResult);
+            const int timeout = 5000;
+
+            _mockPingService!.Setup(s => s.CheckPingAsync(host, timeout)).ReturnsAsync(pingResult);
 
             var result = await _pingController!.PostPingHost(host);
 
@@ -68,7 +70,9 @@ namespace WebTest.Src.ControllerTest
         public async Task PostPingHost_PingFails_ReturnsOkWithErrorMessage()
         {
             const string host = "example.com";
-            _mockPingService!.Setup(s => s.CheckPingAsync(host)).ReturnsAsync(double.MaxValue);
+            const int timeout = 5000;
+
+            _mockPingService!.Setup(s => s.CheckPingAsync(host, timeout)).ReturnsAsync(double.MaxValue);
 
             var result = await _pingController!.PostPingHost(host);
 
@@ -86,8 +90,9 @@ namespace WebTest.Src.ControllerTest
         public async Task PostPingHost_ExceptionThrown_ReturnsInternalServerError()
         {
             const string host = "example.com";
+            const int timeout = 5000;
 
-            _mockPingService!.Setup(s => s.CheckPingAsync(host)).ThrowsAsync(new Exception("Test exception"));
+            _mockPingService!.Setup(s => s.CheckPingAsync(host, timeout)).ThrowsAsync(new Exception("Test exception"));
 
             var result = await _pingController!.PostPingHost(host);
 

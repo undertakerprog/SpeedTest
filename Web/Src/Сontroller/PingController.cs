@@ -18,7 +18,7 @@ namespace Web.Src.Сontroller
 
             try
             {
-                var pingResult = await pingService.CheckPingAsync(host);
+                var pingResult = await pingService.CheckPingAsync(host, 5000);
                 if (pingResult == double.MaxValue)
                 {
                     return Ok(new PingErrorResponse

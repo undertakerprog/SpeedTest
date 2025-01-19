@@ -53,7 +53,7 @@ namespace Web.Src.Service
                 }
 
                 var pingService = new PingService();
-                var ping = await pingService.CheckPingAsync(server!.Host);
+                var ping = await pingService.CheckPingAsync(server!.Host, 5000);
 
                 var downloadUrls = GenerateDownloadUrls(server, 3);
 

@@ -105,12 +105,24 @@ namespace Web.Src.Service
 
             var pingService = new PingService();
 
-            foreach (var server in relevantServers)
-            {
-                var ping = await pingService.CheckPingAsync(server.Host);
-                if (!(ping < bestPing)) continue;
-                bestPing = ping;
-                bestServer = server;
+            var initialTimeout = 100;
+            var retryCount = 5;
+
+            for (var i = 0; i < retryCount; i++) {
+                foreach (var server in relevantServers)
+                {
+                    var ping = await pingService.CheckPingAsync(server.Host, initialTimeout);
+                    if (!(ping < bestPing)) continue;
+                    bestPing = ping;
+                    bestServer = server;
+                }
+
+                if (bestServer != null && bestPing < double.MaxValue)
+                {
+                    break;
+                }
+
+                initialTimeout *= 2;
             }
 
             return bestServer;

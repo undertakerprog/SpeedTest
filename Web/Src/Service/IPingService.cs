@@ -2,6 +2,6 @@
 {
     public interface IPingService
     {
-        Task<double> CheckPingAsync(string host);
+        Task<double> CheckPingAsync(string host, int timeout);
     }
 }

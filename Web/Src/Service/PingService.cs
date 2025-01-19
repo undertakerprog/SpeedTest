@@ -4,7 +4,7 @@ namespace Web.Src.Service
 {
     public sealed class PingService : IPingService
     {
-        public async Task<double> CheckPingAsync(string host)
+        public async Task<double> CheckPingAsync(string host, int timeout)
         {
             using var ping = new Ping();
             var options = new PingOptions
@@ -13,7 +13,6 @@ namespace Web.Src.Service
                 DontFragment = true,
             };
             var buffer = new byte[32];  //Packege size
-            const int timeout = 5000;
 
             try
             {

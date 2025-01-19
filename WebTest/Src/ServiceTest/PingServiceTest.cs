@@ -17,16 +17,21 @@ namespace WebTest.Src.ServiceTest
         public async Task CheckPingAsync_ValidHost_ReturnsPingTime()
         {
             const string host = "www.google.com";
+            const int timeout = 1000;
 
-            var result = await _pingService!.CheckPingAsync(host);
-            Assert.IsTrue(result >= 0, "Ping should be non-negative for a valid host");
+            var result = await _pingService!.CheckPingAsync(host, timeout);
+
+            Assert.IsTrue(result is >= 0 and < double.MaxValue,
+                "Ping should be non-negative and less than MaxValue for a valid host");
         }
 
         [TestMethod]
         public async Task CheckPingAsync_InvalidHost_ReturnsMaxValue()
         {
             const string host = "invalid-host-name";
-            var result = await _pingService!.CheckPingAsync(host);
+            const int timeout = 1000;
+
+            var result = await _pingService!.CheckPingAsync(host, timeout);
 
             Assert.AreEqual(double.MaxValue, result,
                 "Ping time should be MaxValue for an invalid host");
@@ -35,11 +40,12 @@ namespace WebTest.Src.ServiceTest
         [TestMethod]
         public async Task CheckPingAsync_Timeout_ReturnsMaxValue()
         {
-            const string host = "8.8.8.8";
+            const string host = "10.255.255.1";
+            const int timeout = 1;
 
-            var result = await _pingService!.CheckPingAsync(host);
+            var result = await _pingService!.CheckPingAsync(host, timeout);
 
-            Assert.IsTrue(result is double.MaxValue or >= 0,
+            Assert.AreEqual(double.MaxValue, result,
                 "In case of timeout, the result should be MaxValue");
         }
     }
