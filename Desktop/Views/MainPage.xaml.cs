@@ -10,7 +10,7 @@ namespace Desktop.Views
     public partial class MainPage
     {
         private readonly HttpClient _httpClient = new HttpClient();
-        private readonly SpeedTestService _speedTestService;
+        private readonly DesktopSpeedTestService _speedTestService;
 
         private Server _selectedServer;
 
@@ -18,7 +18,7 @@ namespace Desktop.Views
         {
             InitializeComponent();
 
-            _speedTestService = new SpeedTestService(new HttpClient { BaseAddress = new Uri("http://localhost:5252") });
+            _speedTestService = new DesktopSpeedTestService(new HttpClient { BaseAddress = new Uri("http://localhost:5252") });
 
             SpeedTestRadioButton.Checked += RadioButton_Checked;
             FastSpeedTestRadioButton.Checked += RadioButton_Checked;
@@ -31,12 +31,12 @@ namespace Desktop.Views
         {
             try
             {
+                StartButton.Visibility = Visibility.Collapsed;
+                SpeedResultText.Text = "Measuring speed... Please wait.";
+                SpeedResultText.Visibility = Visibility.Visible;
+
                 if (FastSpeedTestRadioButton.IsChecked == true)
                 {
-                    StartButton.Visibility = Visibility.Collapsed;
-                    SpeedResultText.Text = "Measuring speed... Please wait.";
-                    SpeedResultText.Visibility = Visibility.Visible;
-
                     var speedResult = await _speedTestService.GetFastDownloadSpeedAsync();
 
                     SpeedResultText.Text = !string.IsNullOrEmpty(speedResult)
@@ -45,7 +45,13 @@ namespace Desktop.Views
                 }
                 else if (SpeedTestRadioButton.IsChecked == true)
                 {
-                    // TODO
+                    ServersComboBox.Visibility = Visibility.Collapsed;
+
+                    var result = await _speedTestService.GetDownloadSpeedAsync(_selectedServer.Host);
+
+                    SpeedResultText.Text = !string.IsNullOrEmpty(result)
+                        ? $"{result}"
+                        : "Error fetching speed.";
                 }
                 else
                 {
