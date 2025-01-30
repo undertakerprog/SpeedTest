@@ -15,57 +15,32 @@ namespace Web.Src.Service
 
         public async Task<double> FastDownloadSpeedAsync(TimeSpan duration)
         {
-            var url = configuration["SpeedTest:DownloadUrl"];
-            if (string.IsNullOrEmpty(url))
-            {
-                throw new InvalidOperationException("Download URL isn't configured");
-            }
+            var url = configuration["SpeedTest:DownloadUrl"]
+                      ?? throw new InvalidOperationException("Download URL isn't configured");
 
-            try
-            {
-                return await MeasureDownloadSpeedFromUrlAsync(url, duration);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error measuring fast download speed: {ex.Message}");
-                throw;
-            }
+            return await DownloadAndMeasureSpeedAsync([url], duration);
         }
 
         public async Task<DownloadSpeed> GetDownloadSpeed(string? host = null)
         {
             try
             {
-                Server? server;
-                if (host != null)
-                {
-                    var servers = await locationService.LoadServersAsync();
-                    server = servers.FirstOrDefault(s => 
-                        s.Host.Equals(host, StringComparison.OrdinalIgnoreCase));
-                    if (server == null)
-                    {
-                        throw new Exception($"Server with host '{host}' not found in the server list");
-                    }
-                }
-                else
-                {
-                    server = await locationService.GetBestServerAsync();
-                }
+                var server = host != null
+                    ? (await locationService.LoadServersAsync())
+                      .FirstOrDefault(s => s.Host.Equals(host, StringComparison.OrdinalIgnoreCase))
+                      ?? throw new Exception($"Server '{host}' not found")
+                    : await locationService.GetBestServerAsync();
 
                 var pingService = new PingService();
                 var ping = await pingService.CheckPingAsync(server!.Host, 5000);
 
                 var downloadUrls = GenerateDownloadUrls(server, 3);
-
-
-                var speed = await MeasureDownloadSpeedAsync(downloadUrls);
-
-                var speedAverage = speed > 0 ? speed : 0;
+                var speed = await DownloadAndMeasureSpeedAsync(downloadUrls, TimeSpan.FromSeconds(15));
 
                 return new DownloadSpeed
                 {
                     Server = server,
-                    Speed = Math.Round(speedAverage, 3),
+                    Speed = Math.Round(speed, 3),
                     Unit = "Mbps",
                     Ping = ping,
                     Source = "SpeedTestService"
@@ -92,68 +67,63 @@ namespace Web.Src.Service
             }
         }
 
-        private async Task<double> MeasureDownloadSpeedAsync(IEnumerable<string> downloadUrls)
+        private async Task<double> DownloadAndMeasureSpeedAsync(IEnumerable<string> urls, TimeSpan timeout)
         {
-            double totalSpeed = 0;
-            var count = 0;
+            double totalDownloaded = 0;
+            var stopwatch = Stopwatch.StartNew();
 
-            foreach (var url in downloadUrls)
+            using var cts = new CancellationTokenSource(timeout);
+
+            while (stopwatch.Elapsed < timeout)
             {
-                try
+                foreach (var url in urls)
                 {
-                    var speed = await MeasureDownloadSpeedFromUrlAsync(url, TimeSpan.FromSeconds(5));
-                    totalSpeed += speed;
-                    count++;
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Error downloading file from URL {url}: {ex.Message}");
+                    if (stopwatch.Elapsed >= timeout)
+                        break;
+
+                    try
+                    {
+                        totalDownloaded += await DownloadFileAsync(url, cts.Token);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Ошибка загрузки {url}: {ex.Message}");
+                    }
                 }
             }
 
-            return count > 0 ? Math.Round(totalSpeed / count, 3) : 0;
+            stopwatch.Stop();
+            var speedInMbps = ((totalDownloaded / MegabyteSize / MegabyteSize) / timeout.TotalSeconds) * 8;
+            return Math.Round(speedInMbps, 3);
         }
 
-        private async Task<double> MeasureDownloadSpeedFromUrlAsync(string url, TimeSpan timeout)
+        private async Task<long> DownloadFileAsync(string url, CancellationToken cancellationToken)
         {
             using var httpClient = httpClientFactory();
             httpClient.Timeout = TimeSpan.FromMilliseconds(Timeout.Infinite);
 
-            var stopwatch = Stopwatch.StartNew();
-            var totalBytesRead = 0L;
+            using var request = new HttpRequestMessage(HttpMethod.Get, url);
+            request.Headers.Add("User-Agent",
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 " +
+                "(KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36");
 
-            try
+            using var response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+            if (!response.IsSuccessStatusCode)
             {
-                using var cts = new CancellationTokenSource(timeout);
-                var request = new HttpRequestMessage(HttpMethod.Get, url);
-                request.Headers.Add("User-Agent",
-                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 " +
-                    "(KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36");
-
-                var response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cts.Token);
-                if (!response.IsSuccessStatusCode)
-                {
-                    throw new Exception($"Failed to download file. HTTP Status: {response.StatusCode}");
-                }
-
-                await using var contentStream = await response.Content.ReadAsStreamAsync(cts.Token);
-                var buffer = new byte[Buffer];
-                int bytesRead;
-
-                while ((bytesRead = await contentStream.ReadAsync(buffer, 0, buffer.Length, cts.Token)) > 0)
-                {
-                    totalBytesRead += bytesRead;
-                }
-            }
-            catch (OperationCanceledException) {}
-            finally
-            {
-                stopwatch.Stop();
+                throw new Exception($"Ошибка загрузки. HTTP статус: {response.StatusCode}");
             }
 
-            var timeInSeconds = stopwatch.Elapsed.TotalSeconds > 0 ? stopwatch.Elapsed.TotalSeconds : timeout.TotalSeconds;
-            var speedInMbps = ((totalBytesRead / MegabyteSize / MegabyteSize) / timeInSeconds) * 8;
-            return Math.Round(speedInMbps, 3);
+            await using var contentStream = await response.Content.ReadAsStreamAsync(cancellationToken);
+            var buffer = new byte[Buffer];
+            long totalBytesRead = 0;
+            int bytesRead;
+
+            while ((bytesRead = await contentStream.ReadAsync(buffer, 0, buffer.Length, cancellationToken)) > 0)
+            {
+                totalBytesRead += bytesRead;
+            }
+
+            return totalBytesRead;
         }
     }
 }
