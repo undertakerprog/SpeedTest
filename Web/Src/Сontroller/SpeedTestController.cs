@@ -49,7 +49,7 @@ namespace Web.Src.Сontroller
                 var speed = await speedTestService.FastDownloadSpeedAsync(TimeSpan.FromSeconds(7));
                 return Ok(new DownloadSpeedResponse
                 {
-                    SpeedMbps = speed
+                    Speed = speed
                 });
             }
             catch (Exception ex)

@@ -12,10 +12,10 @@ namespace WebTest.Src.ModelTest.SpeedTest
 
             var downloadSpeedResponse = new DownloadSpeedResponse
             {
-                SpeedMbps = speedMbps
+                Speed = speedMbps
             };
 
-            Assert.AreEqual(speedMbps, downloadSpeedResponse.SpeedMbps);
+            Assert.AreEqual(speedMbps, downloadSpeedResponse.Speed);
         }
 
         [TestMethod]
@@ -25,10 +25,10 @@ namespace WebTest.Src.ModelTest.SpeedTest
 
             var downloadSpeedResponse = new DownloadSpeedResponse
             {
-                SpeedMbps = speedMbps
+                Speed = speedMbps
             };
 
-            Assert.AreEqual(speedMbps, downloadSpeedResponse.SpeedMbps);
+            Assert.AreEqual(speedMbps, downloadSpeedResponse.Speed);
         }
 
         [TestMethod]
@@ -38,10 +38,10 @@ namespace WebTest.Src.ModelTest.SpeedTest
 
             var downloadSpeedResponse = new DownloadSpeedResponse
             {
-                SpeedMbps = speedMbps
+                Speed = speedMbps
             };
 
-            Assert.AreEqual(speedMbps, downloadSpeedResponse.SpeedMbps);
+            Assert.AreEqual(speedMbps, downloadSpeedResponse.Speed);
         }
 
         [TestMethod]
@@ -51,10 +51,10 @@ namespace WebTest.Src.ModelTest.SpeedTest
 
             var downloadSpeedResponse = new DownloadSpeedResponse
             {
-                SpeedMbps = speedMbps
+                Speed = speedMbps
             };
 
-            Assert.AreEqual(speedMbps, downloadSpeedResponse.SpeedMbps);
+            Assert.AreEqual(speedMbps, downloadSpeedResponse.Speed);
         }
     }
 }

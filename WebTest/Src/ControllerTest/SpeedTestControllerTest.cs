@@ -78,7 +78,7 @@ namespace WebTest.Src.ControllerTest
 
             var response = okResult.Value as DownloadSpeedResponse;
             Assert.IsNotNull(response);
-            Assert.AreEqual(expectedSpeed, response.SpeedMbps);
+            Assert.AreEqual(expectedSpeed, response.Speed);
         }
 
         [TestMethod]

@@ -19,22 +19,33 @@ namespace Web.Src.Service
             var url = configuration["SpeedTest:DownloadUrl"]
                       ?? throw new InvalidOperationException("Download URL isn't configured");
 
-            using var cts = new CancellationTokenSource(duration);
+            double totalDownloaded = 0;
             var stopwatch = Stopwatch.StartNew();
 
             try
             {
-                long totalBytes = await DownloadFileAsync(url, cts.Token);
-                stopwatch.Stop();
+                using var cts = new CancellationTokenSource();
+                cts.CancelAfter(duration);
 
-                double speedInMbps = ((totalBytes / MegabyteSize / MegabyteSize) / stopwatch.Elapsed.TotalSeconds) * 8;
-                return Math.Round(speedInMbps, 3);
+                long downloadedBytes = await DownloadFileAsync(url, cts.Token);
+                totalDownloaded += downloadedBytes;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Ошибка при тесте скорости: {ex.Message}");
+                throw new Exception("Speed ​​measurement error", ex);
+            }
+            finally
+            {
+                stopwatch.Stop();
+            }
+
+            if (stopwatch.Elapsed.TotalSeconds == 0)
+            {
                 return 0;
             }
+
+            var speedInMbps = ((totalDownloaded / MegabyteSize / MegabyteSize) / stopwatch.Elapsed.TotalSeconds) * 8;
+            return Math.Round(speedInMbps, 3);
         }
 
         public async Task<DownloadSpeed> GetDownloadSpeed(string? host = null)

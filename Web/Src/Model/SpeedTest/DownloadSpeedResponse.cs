@@ -2,5 +2,5 @@ namespace Web.Src.Model.SpeedTest;
 
 public class DownloadSpeedResponse
 {
-    public double SpeedMbps { get; init; }
+    public double Speed { get; init; }
 }

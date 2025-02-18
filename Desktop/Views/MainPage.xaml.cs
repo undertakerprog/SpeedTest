@@ -31,6 +31,9 @@ namespace Desktop.Views
         {
             try
             {
+                SpeedTestRadioButton.Visibility = Visibility.Collapsed;
+                FastSpeedTestRadioButton.Visibility = Visibility.Collapsed;
+
                 StartButton.Visibility = Visibility.Collapsed;
                 SpeedResultText.Text = "Measuring speed... Please wait.";
                 SpeedResultText.Visibility = Visibility.Visible;
