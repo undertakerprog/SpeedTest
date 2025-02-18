@@ -83,7 +83,7 @@ namespace WebTest.Src.ControllerTest
             _mockLocationService!.Setup(service => service.GetLocationByIpAsync(host))
                 .ReturnsAsync((expectedLocation.Latitude, expectedLocation.Longitude, expectedLocation.Country, expectedLocation.City));
 
-            var result = await _locationController!.PostHostLocation(host);
+            var result = await _locationController!.GetHostLocation(host);
 
             var okResult = result as OkObjectResult;
             Assert.IsNotNull(okResult);
@@ -104,7 +104,7 @@ namespace WebTest.Src.ControllerTest
             _mockLocationService!.Setup(service => service.GetLocationByIpAsync(host))
                 .ThrowsAsync(new Exception("Test exception"));
 
-            var result = await _locationController!.PostHostLocation(host);
+            var result = await _locationController!.GetHostLocation(host);
 
             var objectResult = result as ObjectResult;
             Assert.IsNotNull(objectResult);

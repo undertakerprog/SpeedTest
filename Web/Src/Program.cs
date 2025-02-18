@@ -1,4 +1,4 @@
-using Microsoft.OpenApi.Models;
+﻿using Microsoft.OpenApi.Models;
 using Infrastructure;
 using Web.Src.Service;
 using StackExchange.Redis;
@@ -27,7 +27,13 @@ namespace Web
                     Title = "Speed Test",
                     Version = "v1",
                     Description = "Api for testing download speed"
+
                 });
+                options.EnableAnnotations();
+
+                var basePath = AppContext.BaseDirectory;
+                var xmlPath = Path.Combine(basePath, "Web.xml");
+                options.IncludeXmlComments(xmlPath);
             });
 
             builder.Services.AddScoped<Func<HttpClient>>(serviceProvider =>

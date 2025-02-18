@@ -10,6 +10,15 @@ namespace Web.Src.Сontroller
     [Route("api/location")]
     public class LocationController(ILocationService locationService, IRedisCacheService cacheService) : Controller
     {
+        /// <summary>
+        /// Fetches the current user's location.
+        /// </summary>
+        /// <remarks>
+        /// This method retrieves the geographical coordinates, country, and city of the current user.
+        /// If the user's location cannot be determined, an error will be returned.
+        /// </remarks>
+        /// <response code="200">Successfully retrieved user location.</response>
+        /// <response code="400">Invalid request parameters.</response>
         [HttpGet("my-location")]
         public async Task<IActionResult> GetUserLocation()
         {
@@ -32,8 +41,19 @@ namespace Web.Src.Сontroller
             }
         }
 
-        [HttpPost("host-location")]
-        public async Task<IActionResult> PostHostLocation([FromBody] string host)
+        /// <summary>
+        /// Retrieves geolocation data for a given host IP address.
+        /// </summary>
+        /// <remarks>
+        /// This method allows you to obtain detailed geographical information about a specific host.
+        /// The input can be either an IP address or a hostname. The response includes latitude, longitude,
+        /// country, and city of the specified host.
+        /// </remarks>
+        /// <param name="host">The IP address or hostname of the target host.</param>
+        /// <response code="200">Successfully retrieved host location.</response>
+        /// <response code="400">Invalid request parameters.</response>
+        [HttpGet("host-location")]
+        public async Task<IActionResult> GetHostLocation([FromQuery] string host)
         {
             try
             {
@@ -54,6 +74,15 @@ namespace Web.Src.Сontroller
             }
         }
 
+        /// <summary>
+        /// Retrieves the closest server to the user's location.
+        /// </summary>
+        /// <remarks>
+        /// This method returns information about the server that is geographically closest to the user.
+        /// If no servers are available, a 404 response will be returned.
+        /// </remarks>
+        /// <response code="200">Successfully retrieved closest server.</response>
+        /// <response code="404">No servers found.</response>
         [HttpGet("closest")]
         public async Task<IActionResult> GetClosestServer()
         {
@@ -78,6 +107,15 @@ namespace Web.Src.Сontroller
             }
         }
 
+        /// <summary>
+        /// Retrieves the best server based on performance metrics.
+        /// </summary>
+        /// <remarks>
+        /// This method returns information about the server with the best quality of service.
+        /// If no servers are available, a 404 response will be returned.
+        /// </remarks>
+        /// <response code="200">Successfully retrieved best server.</response>
+        /// <response code="404">No servers found.</response>
         [HttpGet("best-server")]
         public async Task<IActionResult> GetBestServer()
         {
@@ -101,6 +139,17 @@ namespace Web.Src.Сontroller
             }
         }
 
+        /// <summary>
+        /// Retrieves a list of servers located in the specified city.
+        /// </summary>
+        /// <remarks>
+        /// This method returns a list of servers that are located in the specified city.
+        /// If no city is provided, the user's city will be used by default.
+        /// If no servers are found for the specified city, a 404 response will be returned.
+        /// </remarks>
+        /// <param name="city">The city for which to retrieve the server list. If not provided, defaults to the user's city.</param>
+        /// <response code="200">Successfully retrieved server list.</response>
+        /// <response code="404">No servers found for the specified city.</response>
         [HttpGet("servers-city-list")]
         public async Task<IActionResult> GetServersOfCity([FromQuery] string? city)
         {
