@@ -12,13 +12,29 @@ namespace Web.Src.Service
         private static readonly int[] DownloadSizes = [350, 750, 1500, 3000];
         private const int Buffer = 8192;
         private const double MegabyteSize = 1024;
+        private readonly TimeSpan DownloadTimeout = TimeSpan.FromSeconds(5);
 
         public async Task<double> FastDownloadSpeedAsync(TimeSpan duration)
         {
             var url = configuration["SpeedTest:DownloadUrl"]
                       ?? throw new InvalidOperationException("Download URL isn't configured");
 
-            return await DownloadAndMeasureSpeedAsync([url], duration);
+            using var cts = new CancellationTokenSource(duration);
+            var stopwatch = Stopwatch.StartNew();
+
+            try
+            {
+                long totalBytes = await DownloadFileAsync(url, cts.Token);
+                stopwatch.Stop();
+
+                double speedInMbps = ((totalBytes / MegabyteSize / MegabyteSize) / stopwatch.Elapsed.TotalSeconds) * 8;
+                return Math.Round(speedInMbps, 3);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ошибка при тесте скорости: {ex.Message}");
+                return 0;
+            }
         }
 
         public async Task<DownloadSpeed> GetDownloadSpeed(string? host = null)
@@ -35,7 +51,7 @@ namespace Web.Src.Service
                 var ping = await pingService.CheckPingAsync(server!.Host, 5000);
 
                 var downloadUrls = GenerateDownloadUrls(server, 3);
-                var speed = await DownloadAndMeasureSpeedAsync(downloadUrls, TimeSpan.FromSeconds(15));
+                var speed = await DownloadAndMeasureSpeedAsync(downloadUrls, DownloadTimeout);
 
                 return new DownloadSpeed
                 {
@@ -78,9 +94,6 @@ namespace Web.Src.Service
             {
                 foreach (var url in urls)
                 {
-                    if (stopwatch.Elapsed >= timeout)
-                        break;
-
                     try
                     {
                         totalDownloaded += await DownloadFileAsync(url, cts.Token);
