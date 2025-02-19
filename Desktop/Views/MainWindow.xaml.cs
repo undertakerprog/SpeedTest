@@ -1,10 +1,6 @@
-﻿using System.Diagnostics;
-using System.Net.Http;
-using System.Text.Json;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
-using Desktop.Model;
 
 namespace Desktop.Views
 {

@@ -12,7 +12,7 @@ namespace Web.Src.Service
         private static readonly int[] DownloadSizes = [350, 750, 1500, 3000];
         private const int Buffer = 8192;
         private const double MegabyteSize = 1024;
-        private readonly TimeSpan DownloadTimeout = TimeSpan.FromSeconds(5);
+        private readonly TimeSpan _downloadTimeout = TimeSpan.FromSeconds(5);
 
         public async Task<double> FastDownloadSpeedAsync(TimeSpan duration)
         {
@@ -27,8 +27,12 @@ namespace Web.Src.Service
                 using var cts = new CancellationTokenSource();
                 cts.CancelAfter(duration);
 
-                long downloadedBytes = await DownloadFileAsync(url, cts.Token);
+                var downloadedBytes = await DownloadFileAsync(url, cts.Token);
                 totalDownloaded += downloadedBytes;
+            }
+            catch (OperationCanceledException)
+            {
+                Console.WriteLine("Download operation was canceled due to timeout.");
             }
             catch (Exception ex)
             {
@@ -39,7 +43,7 @@ namespace Web.Src.Service
                 stopwatch.Stop();
             }
 
-            if (stopwatch.Elapsed.TotalSeconds == 0)
+            if (stopwatch.Elapsed.TotalSeconds == 0 || totalDownloaded == 0)
             {
                 return 0;
             }
@@ -62,7 +66,7 @@ namespace Web.Src.Service
                 var ping = await pingService.CheckPingAsync(server!.Host, 5000);
 
                 var downloadUrls = GenerateDownloadUrls(server, 3);
-                var speed = await DownloadAndMeasureSpeedAsync(downloadUrls, DownloadTimeout);
+                var speed = await DownloadAndMeasureSpeedAsync(downloadUrls, _downloadTimeout);
 
                 return new DownloadSpeed
                 {
@@ -123,28 +127,38 @@ namespace Web.Src.Service
 
         private async Task<long> DownloadFileAsync(string url, CancellationToken cancellationToken)
         {
+            long totalBytesRead = 0;
+
             using var httpClient = httpClientFactory();
             httpClient.Timeout = TimeSpan.FromMilliseconds(Timeout.Infinite);
 
             using var request = new HttpRequestMessage(HttpMethod.Get, url);
-            request.Headers.Add("User-Agent",
-                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 " +
-                "(KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36");
+            request.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 " +
+                                              "(KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36");
 
-            using var response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
-            if (!response.IsSuccessStatusCode)
+            try
             {
-                throw new Exception($"Ошибка загрузки. HTTP статус: {response.StatusCode}");
+                using var response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new Exception($"Error download. HTTP status: {response.StatusCode}");
+                }
+
+                await using var contentStream = await response.Content.ReadAsStreamAsync(cancellationToken);
+                var buffer = new byte[Buffer];
+
+                int bytesRead;
+                while ((bytesRead = await contentStream.ReadAsync(buffer, 0, buffer.Length, cancellationToken)) > 0)
+                {
+                    totalBytesRead += bytesRead;
+                }
             }
-
-            await using var contentStream = await response.Content.ReadAsStreamAsync(cancellationToken);
-            var buffer = new byte[Buffer];
-            long totalBytesRead = 0;
-            int bytesRead;
-
-            while ((bytesRead = await contentStream.ReadAsync(buffer, 0, buffer.Length, cancellationToken)) > 0)
+            catch (OperationCanceledException)
             {
-                totalBytesRead += bytesRead;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error downloading file", ex);
             }
 
             return totalBytesRead;

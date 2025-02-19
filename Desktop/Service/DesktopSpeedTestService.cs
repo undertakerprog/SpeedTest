@@ -12,7 +12,7 @@ namespace Desktop.Services
         {
             try
             {
-                var response = await httpClient.GetAsync("/api/SpeedTest/fast-test");
+                var response = await httpClient.GetAsync("fast-test");
                 if (response.IsSuccessStatusCode)
                 {
                     var json = await response.Content.ReadAsStringAsync();
@@ -43,7 +43,7 @@ namespace Desktop.Services
         {
             try
             {
-                var response = await httpClient.GetAsync($"/api/SpeedTest/download-speed?host={host}");
+                var response = await httpClient.GetAsync($"download-speed?host={host}");
                 if (response.IsSuccessStatusCode)
                 {
                     var json = await response.Content.ReadAsStringAsync();
