@@ -14,7 +14,9 @@
                          Margin="0,0,10,0" />
             <RadioButton x:Name="FastSpeedTestRadioButton"
                          Content="Fast Speedtest" 
-                         GroupName="SpeedTestType" />
+                         GroupName="SpeedTestType"
+                         Checked="FastSpeedTestRadioButton_Checked"
+                         Unchecked="FastSpeedTestRadioButton_Unchecked"/>
         </StackPanel>
 
         <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
@@ -33,11 +35,10 @@
 
             <StackPanel Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="-170,0,0,0">
                 <TextBlock x:Name="ServerTextBlock"
-                           Width="170"
+                           Width="130"
                            Height="40"
                            Text="Selected Server: None"
                            HorizontalAlignment="Left"
-                           VerticalAlignment="Center"
                            FontSize="14"
                            FontWeight="SemiBold"
                            TextWrapping="Wrap" />

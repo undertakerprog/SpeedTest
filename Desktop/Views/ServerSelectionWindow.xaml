@@ -4,7 +4,6 @@
         Title="Select Server" Height="300" Width="250"
         ResizeMode="NoResize" WindowStartupLocation="CenterOwner">
     <DockPanel Margin="10">
-        <!-- Поле ввода с подсказкой -->
         <TextBox x:Name="ServerFilterTextBox"
                  Height="30"
                  DockPanel.Dock="Top"
@@ -15,17 +14,7 @@
                  LostFocus="ServerFilterTextBox_LostFocus"/>
 
         <ScrollViewer VerticalScrollBarVisibility="Auto">
-            <StackPanel x:Name="ServerLinksPanel" Orientation="Vertical">
-                <TextBlock>
-                    <Hyperlink Click="Hyperlink_Click">Server 1</Hyperlink>
-                </TextBlock>
-                <TextBlock>
-                    <Hyperlink Click="Hyperlink_Click">Server 2</Hyperlink>
-                </TextBlock>
-                <TextBlock>
-                    <Hyperlink Click="Hyperlink_Click">Server 3</Hyperlink>
-                </TextBlock>
-            </StackPanel>
+            <StackPanel x:Name="ServerLinksPanel" Orientation="Vertical"/>
         </ScrollViewer>
     </DockPanel>
 </Window>
