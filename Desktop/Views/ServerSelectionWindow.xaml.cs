@@ -1,17 +1,22 @@
-﻿using System.Windows;
+﻿using System.Net.Http;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
+using System.Windows.Input;
 using Desktop.Model;
+using Desktop.Service;
 
 namespace Desktop.Views
 {
     public partial class ServerSelectionWindow
     {
-        private readonly List<Server>? _servers;
+        private List<Server>? _servers;
+        private readonly DesktopLocationService _locationService;
 
         public ServerSelectionWindow(List<Server>? servers)
         {
             InitializeComponent();
+            _locationService = new DesktopLocationService(new HttpClient());
             _servers = servers;
             LoadServers();
         }
@@ -56,7 +61,7 @@ namespace Desktop.Views
         private void ServerFilterTextBox_GotFocus(object sender, RoutedEventArgs e)
         {
             var textBox = sender as TextBox;
-            if (textBox?.Text != "Search server") return;
+            if (textBox?.Text != "Search city for test") return;
             textBox.Text = "";
             textBox.Foreground = System.Windows.Media.Brushes.Black;
         }
@@ -65,8 +70,47 @@ namespace Desktop.Views
         {
             var textBox = sender as TextBox;
             if (!string.IsNullOrWhiteSpace(textBox?.Text)) return;
-            textBox!.Text = "Search server";
+            textBox!.Text = "Search city for test";
             textBox.Foreground = System.Windows.Media.Brushes.Gray;
+        }
+
+        private async void ServerFilterTextBox_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            try
+            {
+                if (e.Key != Key.Enter)
+                    return;
+                e.Handled = true;
+
+                var filterText = ServerFilterTextBox.Text.Trim();
+
+                if (string.IsNullOrWhiteSpace(filterText))
+                {
+                    MessageBox.Show("Please enter a valid search term.");
+                    return;
+                }
+
+                ServerLinksPanel.Children.Clear();
+                ServerLinksPanel.Children.Add(new TextBlock { Text = "Loading servers...", Foreground = System.Windows.Media.Brushes.Gray });
+
+                try
+                {
+                    var newServers = await _locationService.GetServersOfCityAsync(filterText);
+
+                    _servers = newServers;
+
+                    LoadServers();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error loading servers: {ex.Message}");
+                    LoadServers();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
     }
 }

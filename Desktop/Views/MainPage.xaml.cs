@@ -10,8 +10,6 @@ namespace Desktop.Views
 {
     public partial class MainPage
     {
-        private readonly HttpClient _httpClient = new HttpClient();
-
         private readonly DesktopSpeedTestService _speedTestService;
         private readonly DesktopLocationService _locationService;
 

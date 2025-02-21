@@ -1,5 +1,4 @@
-﻿using System.Configuration;
-using System.Net.Http;
+﻿using System.Net.Http;
 using System.Text.Json;
 using Desktop.Model;
 using Desktop.Properties;
@@ -26,7 +25,7 @@ namespace Desktop.Service
 
                 return serverResponse?.Server;
             }
-            catch (System.InvalidOperationException e)
+            catch
             {
                 return null;
             }
@@ -37,8 +36,8 @@ namespace Desktop.Service
             try
             {
                 var url = city != null
-                    ? $"servers-city-list?city={city}"
-                    : "servers-city-list";
+                    ? LocationUri + $"servers-city-list?city={city}"
+                    : LocationUri + "servers-city-list";
 
                 var response = await httpClient.GetAsync(url);
                 if (!response.IsSuccessStatusCode)

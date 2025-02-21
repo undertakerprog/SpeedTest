@@ -6,8 +6,8 @@ namespace Desktop.Views
 {
     public partial class MainWindow
     {
-        private readonly MainPage _mainPage = new MainPage();
-        private readonly SettingsPage _settingsPage = new SettingsPage();
+        private readonly MainPage _mainPage = new();
+        private readonly SettingsPage _settingsPage = new();
 
         public MainWindow()
         {

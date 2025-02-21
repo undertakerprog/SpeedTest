@@ -8,11 +8,11 @@
                  Height="30"
                  DockPanel.Dock="Top"
                  VerticalAlignment="Top"
-                 Text="Search server"
+                 Text="Search city for test"
                  Foreground="Gray"
                  GotFocus="ServerFilterTextBox_GotFocus"
-                 LostFocus="ServerFilterTextBox_LostFocus"/>
-
+                 LostFocus="ServerFilterTextBox_LostFocus"
+                 PreviewKeyDown="ServerFilterTextBox_PreviewKeyDown"/>
         <ScrollViewer VerticalScrollBarVisibility="Auto">
             <StackPanel x:Name="ServerLinksPanel" Orientation="Vertical"/>
         </ScrollViewer>
