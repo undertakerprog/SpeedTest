@@ -2,7 +2,7 @@
 {
     public class ServerResponse
     {
-        public string Message { get; set; }
-        public Server Server { get; set; }
+        public string? Message { get; init; }
+        public Server? Server { get; init; }
     }
 }

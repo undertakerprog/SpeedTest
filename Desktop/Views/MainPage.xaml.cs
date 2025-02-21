@@ -10,9 +10,6 @@ namespace Desktop.Views
 {
     public partial class MainPage
     {
-        private const string SpeedTestUri = "http://localhost:5252/api/SpeedTest/";
-        private const string LocationUri = "http://localhost:5252/api/Location/";
-
         private readonly HttpClient _httpClient = new HttpClient();
 
         private readonly DesktopSpeedTestService _speedTestService;
@@ -26,8 +23,8 @@ namespace Desktop.Views
         {
             InitializeComponent();
 
-            _speedTestService = new DesktopSpeedTestService(new HttpClient { BaseAddress = new Uri(SpeedTestUri) });
-            _locationService = new DesktopLocationService(new HttpClient { BaseAddress = new Uri(LocationUri) } );
+            _speedTestService = new DesktopSpeedTestService(new HttpClient());
+            _locationService = new DesktopLocationService(new HttpClient());
 
             LoadServerForTest();
             LoadListServerOfUserCity();

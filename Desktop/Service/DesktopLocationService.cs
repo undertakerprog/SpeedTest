@@ -1,16 +1,20 @@
-﻿using System.Net.Http;
+﻿using System.Configuration;
+using System.Net.Http;
 using System.Text.Json;
 using Desktop.Model;
+using Desktop.Properties;
 
 namespace Desktop.Service
 {
     public class DesktopLocationService(HttpClient httpClient)
     {
+        private static string? LocationUri => Settings.Default.LocationUri;
+
         public async Task<Server?> GetBestServerAsync()
         {
             try
             {
-                var response = await httpClient.GetAsync("best-server");
+                var response = await httpClient.GetAsync(LocationUri + "best-server");
                 if (!response.IsSuccessStatusCode)
                 {
                     return null;
@@ -22,7 +26,7 @@ namespace Desktop.Service
 
                 return serverResponse?.Server;
             }
-            catch
+            catch (System.InvalidOperationException e)
             {
                 return null;
             }

@@ -5,5 +5,11 @@
     <Setting Name="SpeedUnit" Type="System.String" Scope="User">
       <Value Profile="(Default)">Mbps</Value>
     </Setting>
+    <Setting Name="SpeedTestUri" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">http://localhost:5252/api/SpeedTest/</Value>
+    </Setting>
+    <Setting Name="LocationUri" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">http://localhost:5252/api/Location/</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

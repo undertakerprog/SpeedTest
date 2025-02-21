@@ -1,18 +1,22 @@
-﻿using System.Diagnostics;
+﻿using System.Configuration;
+using System.Diagnostics;
 using System.Net.Http;
 using System.Text.Json;
 using Desktop.Helpers;
 using Desktop.Models;
+using Desktop.Properties;
 
 namespace Desktop.Services
 {
     public class DesktopSpeedTestService(HttpClient httpClient)
     {
+        private static string? SpeedTestUri => Settings.Default.SpeedTestUri;
+
         public async Task<string> GetFastDownloadSpeedAsync()
         {
             try
             {
-                var response = await httpClient.GetAsync("fast-test");
+                var response = await httpClient.GetAsync(SpeedTestUri + "fast-test");
                 if (response.IsSuccessStatusCode)
                 {
                     var json = await response.Content.ReadAsStringAsync();
@@ -43,7 +47,7 @@ namespace Desktop.Services
         {
             try
             {
-                var response = await httpClient.GetAsync($"download-speed?host={host}");
+                var response = await httpClient.GetAsync(SpeedTestUri + $"download-speed?host={host}");
                 if (response.IsSuccessStatusCode)
                 {
                     var json = await response.Content.ReadAsStringAsync();
