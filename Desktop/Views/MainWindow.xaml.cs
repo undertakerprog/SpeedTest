@@ -6,13 +6,13 @@ namespace Desktop.Views
 {
     public partial class MainWindow
     {
-        private readonly MainPage _mainPage = new();
+        private MainPage _mainPage = new();
         private readonly SettingsPage _settingsPage = new();
 
         public MainWindow()
         {
             InitializeComponent();
-            MainFrame.Navigate(new MainPage());
+            MainFrame.Navigate(_mainPage);
             Closing += MainWindow_Closing!;
         }
 
@@ -46,6 +46,15 @@ namespace Desktop.Views
             var bitmapImage = new BitmapImage(new Uri(imagePath, UriKind.RelativeOrAbsolute));
             CurrentImage.Source = bitmapImage;
         }
+
+        private void ReloadButton_Click(object sender, RoutedEventArgs e)
+        {
+            _mainPage = new MainPage();
+            MainFrame.Navigate(_mainPage);
+
+            UpdateUI("SpeedTest", "../Resources/settings-50.png");
+        }
+
 
         private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {

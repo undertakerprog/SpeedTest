@@ -4,24 +4,42 @@
         Title="MainWindow" Height="450" Width="800"
         WindowStartupLocation="CenterScreen">
     <Grid>
-        <DockPanel Background="#333 " Height="50" VerticalAlignment="Top">
+        <Grid Background="#333" Height="50" VerticalAlignment="Top">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
             <Button Width="40" Height="40" 
-                    HorizontalAlignment="Left"
                     Background="Transparent"
                     BorderThickness="0"
-                    Margin ="5"
-                    Click="SettingsButton_Click">
+                    Margin="5"
+                    Click="SettingsButton_Click"
+                    Grid.Column="0">
                 <Image x:Name="CurrentImage" 
-                    Source="/Resources/settings-50.png" Stretch="Uniform"></Image>
+                       Source="/Resources/settings-50.png" Stretch="Uniform"/>
             </Button>
+
             <TextBlock x:Name="CurrentPageTitle"
                        Text="SpeedTest"
                        Foreground="White"
                        VerticalAlignment="Center"
                        HorizontalAlignment="Center"
                        FontSize="16"
-            ></TextBlock>
-        </DockPanel>
-        <Frame x:Name="MainFrame" NavigationUIVisibility="Hidden" Margin="0,50,0,0"></Frame>
+                       Grid.Column="1"/>
+
+            <Button Width="40" Height="40"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Margin="5"
+                    Click="ReloadButton_Click"
+                    Grid.Column="2">
+                <Image x:Name="ReloadImage"
+                       Source="/Resources/reload-50.png" Stretch="Uniform"/>
+            </Button>
+        </Grid>
+
+        <Frame x:Name="MainFrame" NavigationUIVisibility="Hidden" Margin="0,50,0,0"/>
     </Grid>
 </Window>

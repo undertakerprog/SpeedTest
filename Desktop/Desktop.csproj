@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <None Remove="Resources\home-50.png" />
+    <None Remove="Resources\reload-50.png" />
     <None Remove="Resources\settings-50.png" />
   </ItemGroup>
 
@@ -27,6 +28,7 @@
 
   <ItemGroup>
     <Resource Include="Resources\home-50.png" />
+    <Resource Include="Resources\reload-50.png" />
     <Resource Include="Resources\settings-50.png" />
   </ItemGroup>
 
