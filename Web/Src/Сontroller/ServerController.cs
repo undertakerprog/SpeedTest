@@ -112,30 +112,33 @@ namespace Web.Src.Сontroller
         }
 
         /// <summary>
-        /// Deletes a server based on city and optional host.
+        /// Deletes a specific server based on city and/or host.
         /// </summary>
         /// <remarks>
-        /// This method deletes a server matching the specified city and optionally the host.
-        /// If no host is provided, all servers in the specified city will be deleted.
+        /// This method deletes a single server based on the provided parameters:
+        /// If only the city is specified, the server is deleted only if there is a single server in that city.
+        /// If multiple servers exist in the city, the host must also be specified.
+        /// If only the host is specified (without a city), the server with that host is deleted.
+        /// At least one parameter (city or host) must be provided.
         /// </remarks>
-        /// <param name="city">The city of the server to delete.</param>
-        /// <param name="host">The optional host of the server to delete.</param>
+        /// <param name="city">The city where the server is located (optional, but required if host is not provided).</param>
+        /// <param name="host">The host of the server to delete (optional, but required if multiple servers exist in a city).</param>
         /// <response code="200">Server successfully deleted.</response>
-        /// <response code="400">City parameter is null or empty.</response>
-        /// <response code="404">No server found for the specified city or host.</response>
+        /// <response code="400">Neither city nor host was provided, or multiple servers exist in a city but no host was specified.</response>
+        /// <response code="404">No matching server was found for the specified city and/or host.</response>
         /// <response code="500">An unexpected server error occurred.</response>
         [HttpDelete("delete-server")]
-        public async Task<IActionResult> DeleteServer([FromQuery] string city, [FromQuery] string? host = null)
+        public async Task<IActionResult> DeleteServer([FromQuery] string? city = null, [FromQuery] string? host = null)
         {
-            if (string.IsNullOrEmpty(city))
+            if (string.IsNullOrEmpty(city) && string.IsNullOrEmpty(host))
             {
-                return BadRequest("OldHost can't be null or empty");
+                return BadRequest("At least one parameter (city or host) must be specified.");
             }
 
             try
             {
                 await serverService.DeleteServerAsync(city, host);
-                return Ok($"Server successfully deleted for city: {city} with host {host}");
+                return Ok($"Server deleted successfully for city: {city ?? "any"} with host: {host ?? "any"}");
             }
             catch (ArgumentException ex)
             {

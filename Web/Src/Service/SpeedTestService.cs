@@ -11,7 +11,7 @@ namespace Web.Src.Service
     {
         private static readonly int[] DownloadSizes = [350, 750, 1500, 3000];
         private const int Buffer = 8192;
-        private const double MegabyteSize = 1024;
+        private const double Size = 1024;
         private readonly TimeSpan _downloadTimeout = TimeSpan.FromSeconds(5);
 
         public async Task<double> FastDownloadSpeedAsync(TimeSpan duration)
@@ -48,7 +48,7 @@ namespace Web.Src.Service
                 return 0;
             }
 
-            var speedInMbps = ((totalDownloaded / MegabyteSize / MegabyteSize) / stopwatch.Elapsed.TotalSeconds) * 8;
+            var speedInMbps = ((totalDownloaded / Size / Size) / stopwatch.Elapsed.TotalSeconds) * 8;
             return Math.Round(speedInMbps, 3);
         }
 
@@ -121,7 +121,7 @@ namespace Web.Src.Service
             }
 
             stopwatch.Stop();
-            var speedInMbps = ((totalDownloaded / MegabyteSize / MegabyteSize) / timeout.TotalSeconds) * 8;
+            var speedInMbps = ((totalDownloaded / Size / Size) / timeout.TotalSeconds) * 8;
             return Math.Round(speedInMbps, 3);
         }
 
