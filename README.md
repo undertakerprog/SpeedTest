@@ -5,7 +5,8 @@
 2. [🛠 Used technologies](#technologies)
 3. [🔗 API Endpoints](#endpoints)
 4. [🚀 Installation and launch](#installation)
-5. [👤 Author](#author)
+5. [🐳 Docker Installation and Launch](#docker)
+6. [👤 Author](#author)
 
 ## <a id = "about"> 1. 📖 About the project </a>
 
@@ -333,5 +334,37 @@ If the Desktop application is not working, it may be due to a port mismatch, che
     </Setting>
 ```
 
-## <a id = "author"> 5. 👤 Author </a>
+## <a id = "docker"> 5. 🐳 Docker Installation and Launch </a>
+
+To simplify the setup and running of the project, Docker and Docker Compose are used. This allows you to run the application and all its dependencies (e.g., Redis) in isolated containers.
+
+### 5.1. Install Docker
+If Docker is not installed, follow the official documentation for your operating system:
+- [Install Docker on Windows](https://docs.docker.com/desktop/setup/install/windows-install/)
+- [Install Docker on macOS](https://docs.docker.com/desktop/setup/install/mac-install/)
+- [Install Docker on Linux](https://docs.docker.com/engine/install/)
+
+### 5.2 Run the Project Using Docker Compose
+
+Run the Project Using Docker Compose
+```sh
+git clone https://github.com/undertakerprog/SpeedTest.git
+cd SpeedTest
+```
+Run the project
+```sh
+docker-compose up --build
+```
+This command will build and start the containers for your application and Redis.
+
+### Check the application
+Your application will be available at: `http://localhost:8080`.
+Redis will be available at `localhost:6379`.
+
+### 5.3 Stop the containers
+To stop the containers, run: ```docker-compose down```
+
+
+
+## <a id = "author"> 6. 👤 Author </a>
 Author - [undertakerprog](https://github.com/undertakerprog)
