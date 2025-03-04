@@ -317,7 +317,7 @@ KEYS server-city:* #Getting all cached cities
 GET server-city:your_city #Getting the contents of your_city
 ```
 
-### 4.3 Настройка Desktop application
+### 4.3 Configuring the Desktop application
 
 If the Desktop application is not working, it may be due to a port mismatch, check which port the backend application is running on (by default it should work on 5252) and replace it in the Desktop file `Settings.settings` path `SpeedTest\Desktop\Properties\Settings.settings`
 
@@ -333,5 +333,5 @@ If the Desktop application is not working, it may be due to a port mismatch, che
     </Setting>
 ```
 
-## <a id = "author"> 5. 👤 Автор </a>
+## <a id = "author"> 5. 👤 Author </a>
 Author - [undertakerprog](https://github.com/undertakerprog)

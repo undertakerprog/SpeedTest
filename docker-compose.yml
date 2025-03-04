@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  web:
+    image: web
+    build:
+      context: .
+      dockerfile: Web/Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - redis
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    networks:
+      - mynetwork
+
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - mynetwork
+
+volumes:
+  redis_data:
+
+networks:
+  mynetwork:
