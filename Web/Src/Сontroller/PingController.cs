@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Net.NetworkInformation;
+using Microsoft.AspNetCore.Mvc;
 using Web.Src.Model.Ping;
 using Web.Src.Service;
 
@@ -31,19 +32,18 @@ namespace Web.Src.Сontroller
             try
             {
                 var pingResult = await pingService.CheckPingAsync(host, 5000);
-                if (pingResult == double.MaxValue)
-                {
-                    return Ok(new PingErrorResponse
-                    {
-                        Host = host,
-                        Message = "Ping failed or host is unreachable"
-                    });
-                }
-                
                 return Ok(new PingResponse
                 {
                     Host = host,
                     PingResult = pingResult
+                });
+            }
+            catch (PingException ex)
+            {
+                return Ok(new PingErrorResponse
+                {
+                    Host = host,
+                    Message = ex.Message
                 });
             }
             catch (Exception ex)
