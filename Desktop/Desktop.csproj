@@ -1,17 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-	<PropertyGroup>
-		<OutputType>WinExe</OutputType>
-		<TargetFramework Condition="'$(OS)' == 'Windows_NT'">net8.0-windows</TargetFramework>
-		<Nullable>enable</Nullable>
-		<ImplicitUsings>enable</ImplicitUsings>
-		<UseWPF>true</UseWPF>
-	</PropertyGroup>
-
-	<ItemGroup Condition="'$(OS)' == 'Windows_NT'">
-		<PackageReference Include="System.Drawing.Common" Version="9.0.0" />
-		<PackageReference Include="System.Management" Version="9.0.0" />
-	</ItemGroup>
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
 
   <ItemGroup>
     <Compile Remove="src\**" />
