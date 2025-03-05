@@ -8,19 +8,18 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-    
     env:
       Solution_Name: SpeedTest.sln
       AspNet_Project_Path: Web/Web.csproj
       Test_Project_Path: WebTest/WebTest.csproj
+      Infrastructure_Project_Path: Infrastructure/Infrastructure.csproj
 
     steps:
     - name: Checkout
       uses: actions/checkout@v4
 
-    - name: Install .NET Core
+    - name: Install .NET SDK
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
@@ -28,14 +27,11 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore ${{ env.Solution_Name }}
 
-    - name: Remove Desktop project from solution
-      run: dotnet sln ${{ env.Solution_Name }} remove Desktop/Desktop.csproj
-
-    - name: Build
-      run: dotnet build ${{ env.Solution_Name }} --configuration Release --no-restore
-
-    - name: Add Desktop project back to solution
-      run: dotnet sln ${{ env.Solution_Name }} add Desktop/Desktop.csproj
+    - name: Build projects
+      run: |
+        dotnet build ${{ env.Infrastructure_Project_Path }} --configuration Release --no-restore
+        dotnet build ${{ env.AspNet_Project_Path }} --configuration Release --no-restore
+        dotnet build ${{ env.Test_Project_Path }} --configuration Release --no-restore
 
     - name: Run tests
       run: dotnet test ${{ env.Test_Project_Path }} --configuration Release --verbosity normal
