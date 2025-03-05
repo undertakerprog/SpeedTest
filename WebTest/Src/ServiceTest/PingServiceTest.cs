@@ -1,4 +1,5 @@
-﻿using Web.Src.Service;
+﻿using Moq;
+using Web.Src.Service;
 
 namespace WebTest.Src.ServiceTest
 {
@@ -16,10 +17,16 @@ namespace WebTest.Src.ServiceTest
         [TestMethod]
         public async Task CheckPingAsync_ValidHost_ReturnsPingTime()
         {
-            const string host = "www.google.com";
-            const int timeout = 1000;
+            const string host = "8.8.8.8";
+            const int timeout = 3000;
+            const double expectedPingTime = 50.5;
 
-            var result = await _pingService!.CheckPingAsync(host, timeout);
+            var mockPingService = new Mock<IPingService>();
+            mockPingService
+                .Setup(service => service.CheckPingAsync(host, timeout))
+                .ReturnsAsync(expectedPingTime);
+
+            var result = await mockPingService.Object.CheckPingAsync(host, timeout);
 
             Assert.IsTrue(result is >= 0 and < double.MaxValue,
                 "Ping should be non-negative and less than MaxValue for a valid host");

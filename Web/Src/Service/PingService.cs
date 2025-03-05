@@ -17,7 +17,11 @@ namespace Web.Src.Service
             try
             {
                 var reply = await ping.SendPingAsync(host, timeout, buffer, options);
-                return reply.Status == IPStatus.Success ? reply.RoundtripTime : double.MaxValue;
+                if (reply.Status != IPStatus.Success)
+                {
+                    throw new PingException("Ping failed or host is unreachable");
+                }
+                return reply.RoundtripTime;
             }
             catch
             {
