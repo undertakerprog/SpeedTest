@@ -1,0 +1,55 @@
+name: CI/CD for ASP.NET and WPF
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+
+    runs-on: windows-latest
+    
+    env:
+      Solution_Name: SpeedTest.sln
+      AspNet_Project_Path: Web/Web.csproj
+      Wpf_Project_Path: Desktop/Desktop.csproj
+      Test_Project_Path: WebTest/WebTest.csproj
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Install .NET Core
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+
+    - name: Restore dependencies
+      run: dotnet restore ${{ env.Solution_Name }}
+
+    - name: Build
+      run: dotnet build ${{ env.Solution_Name }} --configuration Release --no-restore
+
+    - name: Run tests
+      run: dotnet test ${{ env.Test_Project_Path }} --no-build --verbosity normal
+
+    - name: Publish ASP.NET App
+      run: dotnet publish ${{ env.AspNet_Project_Path }} -c Release -o ./publish
+
+    - name: Build WPF App
+      run: msbuild ${{ env.Wpf_Project_Path }} /p:Configuration=Release
+
+    - name: Package WPF App
+      run: |
+        msbuild ${{ env.Wpf_Project_Path }} /p:Configuration=Release /p:OutputPath=./publish/wpf
+      if: github.ref == 'refs/heads/master'
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: BuildArtifacts
+        path: |
+          ./publish
+          ./publish/wpf
