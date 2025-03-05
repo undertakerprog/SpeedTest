@@ -24,6 +24,9 @@ jobs:
       with:
         dotnet-version: 8.0.x
 
+    - name: Exclude Desktop project from solution
+      run: dotnet sln ${{ env.Solution_Name }} remove Desktop/Desktop.csproj
+
     - name: Restore dependencies
       run: dotnet restore ${{ env.Solution_Name }}
 
