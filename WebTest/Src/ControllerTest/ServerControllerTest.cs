@@ -213,26 +213,78 @@ namespace WebTest.Src.ControllerTest
 
             var result = await _serverController!.DeleteServer(city, host);
 
-            var objectResult = result as ObjectResult;
+            var objectResult = result as OkObjectResult;
             Assert.IsNotNull(objectResult);
             Assert.AreEqual(200, objectResult.StatusCode);
             var response = objectResult.Value as string;
             Assert.IsNotNull(response);
-            Assert.AreEqual($"Server successfully deleted for city: {city} with host {host}", response);
+            Assert.AreEqual($"Server deleted successfully for city: {city} with host: {host}", response);
         }
 
         [TestMethod]
-        public async Task DeleteServer_MissingCity_ReturnsBadRequest()
+        public async Task DeleteServer_MissingCityAndHost_ReturnsBadRequest()
         {
-            const string city = "";
+            var result = await _serverController!.DeleteServer();
+
+            var badRequestResult = result as BadRequestObjectResult;
+            Assert.IsNotNull(badRequestResult);
+            Assert.AreEqual(400, badRequestResult.StatusCode);
+            Assert.AreEqual("At least one parameter (city or host) must be specified.", badRequestResult.Value);
+        }
+
+        [TestMethod]
+        public async Task DeleteServer_OnlyCityProvided_ReturnsOk()
+        {
+            const string city = "New York";
+            const string host = null!;
+
+            _mockServerService!.Setup(service => service.DeleteServerAsync(city, host))
+                .Returns(Task.CompletedTask);
+
+            var result = await _serverController!.DeleteServer(city);
+
+            var objectResult = result as OkObjectResult;
+            Assert.IsNotNull(objectResult);
+            Assert.AreEqual(200, objectResult.StatusCode);
+            var response = objectResult.Value as string;
+            Assert.IsNotNull(response);
+            Assert.AreEqual($"Server deleted successfully for city: {city} with host: any", response);
+        }
+
+        [TestMethod]
+        public async Task DeleteServer_OnlyHostProvided_ReturnsOk()
+        {
+            const string city = null!;
             const string host = "server1.com";
+
+            _mockServerService!.Setup(service => service.DeleteServerAsync(city!, host))
+                .Returns(Task.CompletedTask);
+
+            var result = await _serverController!.DeleteServer(city, host);
+
+            var objectResult = result as OkObjectResult;
+            Assert.IsNotNull(objectResult);
+            Assert.AreEqual(200, objectResult.StatusCode);
+            var response = objectResult.Value as string;
+            Assert.IsNotNull(response);
+            Assert.AreEqual($"Server deleted successfully for city: any with host: {host}", response);
+        }
+
+        [TestMethod]
+        public async Task DeleteServer_ServiceThrowsException_ReturnsBadRequest()
+        {
+            const string city = "New York";
+            const string host = "server1.com";
+
+            _mockServerService!.Setup(service => service.DeleteServerAsync(city, host))
+                .ThrowsAsync(new ArgumentException("Invalid city or host"));
 
             var result = await _serverController!.DeleteServer(city, host);
 
             var badRequestResult = result as BadRequestObjectResult;
             Assert.IsNotNull(badRequestResult);
             Assert.AreEqual(400, badRequestResult.StatusCode);
-            Assert.AreEqual("OldHost can't be null or empty", badRequestResult.Value);
+            Assert.AreEqual("Invalid city or host", badRequestResult.Value);
         }
 
         [TestMethod]
