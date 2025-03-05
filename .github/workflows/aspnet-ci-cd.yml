@@ -28,8 +28,14 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore ${{ env.Solution_Name }}
 
+    - name: Remove Desktop project from solution
+      run: dotnet sln ${{ env.Solution_Name }} remove Desktop/Desktop.csproj
+
     - name: Build
-      run: dotnet build ${{ env.Solution_Name }} --configuration Release --no-restore --exclude "**/Desktop.csproj"
+      run: dotnet build ${{ env.Solution_Name }} --configuration Release --no-restore
+
+    - name: Add Desktop project back to solution
+      run: dotnet sln ${{ env.Solution_Name }} add Desktop/Desktop.csproj
 
     - name: Run tests
       run: dotnet test ${{ env.Test_Project_Path }} --configuration Release --verbosity normal
