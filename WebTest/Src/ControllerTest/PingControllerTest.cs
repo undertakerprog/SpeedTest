@@ -45,15 +45,12 @@ namespace WebTest.Src.ControllerTest
         {
             string? host = null;
 
-            if (host != null)
-            {
-                var result = await _pingController!.PostPingHost(host);
+            var result = await _pingController!.PostPingHost(host);
 
-                var badRequestResult = result as BadRequestObjectResult;
-                Assert.IsNotNull(badRequestResult);
-                Assert.AreEqual(400, badRequestResult.StatusCode);
-                Assert.AreEqual("Host can't be null or empty", badRequestResult.Value);
-            }
+            var badRequestResult = result as BadRequestObjectResult;
+            Assert.IsNotNull(badRequestResult);
+            Assert.AreEqual(400, badRequestResult.StatusCode);
+            Assert.AreEqual("Host can't be null or empty", badRequestResult.Value);
         }
 
         [TestMethod]
